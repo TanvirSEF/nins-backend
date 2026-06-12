@@ -27,6 +27,7 @@
     "@nestjs/mapped-types": "^2.1.1",
     "@nestjs/mongoose": "^11.0.4",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.4.4",
     "@nestjs/throttler": "^6.5.0",
     "cache-manager": "^7.2.8",
     "cache-manager-ioredis": "^2.1.0",

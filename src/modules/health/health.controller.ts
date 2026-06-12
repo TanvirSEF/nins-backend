@@ -4,8 +4,10 @@ import { Connection } from 'mongoose';
 import { Inject } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import * as os from 'os';
 
+@ApiTags('health')
 @Controller('health')
 export class HealthController {
   constructor(
@@ -14,6 +16,8 @@ export class HealthController {
   ) {}
 
   @Get()
+  @ApiOperation({ summary: 'Health check — DB, Redis, system status' })
+  @ApiResponse({ status: 200, description: 'System health status' })
   async check() {
     const dbStatus =
       this.connection.readyState === 1 ? 'connected' : 'disconnected';
