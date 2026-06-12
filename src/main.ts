@@ -1,5 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
+import * as compression from 'compression';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -8,13 +10,19 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global prefix
-  app.setGlobalPrefix('api');
-
-  // CORS
+  // ─── Security ───
+  app.use(helmet());
   app.enableCors();
 
-  // Global validation pipe
+  // ─── Performance ───
+  app.use(compression());
+
+  // ─── Global prefix ───
+  app.setGlobalPrefix('api', {
+    exclude: ['health'], // health check at root level for load balancers
+  });
+
+  // ─── Validation ───
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -23,11 +31,11 @@ async function bootstrap() {
     }),
   );
 
-  // Global filters and interceptors
+  // ─── Global filters & interceptors ───
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new LoggingInterceptor(), new TransformInterceptor());
 
-  // Graceful shutdown for Docker
+  // ─── Graceful shutdown for Docker ───
   app.enableShutdownHooks();
 
   const port = process.env.PORT ?? 3000;
