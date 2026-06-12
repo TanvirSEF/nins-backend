@@ -58,6 +58,8 @@ async function bootstrap() {
       'JWT-auth',
     )
     .addTag('auth', 'Authentication & registration')
+    .addTag('departments', 'Department management')
+    .addTag('doctors', 'Doctor profiles')
     .addTag('staff', 'Staff management (SUPER_ADMIN)')
     .addTag('health', 'Health check')
     .build();

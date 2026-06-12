@@ -10,6 +10,8 @@ import { validate } from './config/env.validation';
 import { getDatabaseConfig } from './config/database.config';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { DepartmentModule } from './modules/department/department.module';
+import { DoctorModule } from './modules/doctor/doctor.module';
 import { HealthModule } from './modules/health/health.module';
 import { ShutdownService } from './common/services/shutdown.service';
 import { JwtAuthGuard } from './common/guards';
@@ -47,6 +49,8 @@ import { RolesGuard } from './common/guards';
     // Feature modules
     AuthModule,
     UserModule,
+    DepartmentModule,
+    DoctorModule,
     HealthModule,
   ],
   // Global guards (execution order: throttle → jwt auth → roles)
