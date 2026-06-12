@@ -7,6 +7,7 @@ import { validate } from './config/env.validation';
 import { getDatabaseConfig } from './config/database.config';
 import { UserModule } from './modules/user/user.module';
 import { HealthModule } from './modules/health/health.module';
+import { ShutdownService } from './common/services/shutdown.service';
 
 @Module({
   imports: [
@@ -31,12 +32,13 @@ import { HealthModule } from './modules/health/health.module';
     UserModule,
     HealthModule,
   ],
-  // Global throttle guard — applies to all endpoints
+  // Global throttle guard + shutdown handler
   providers: [
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    ShutdownService,
   ],
 })
 export class AppModule {}
