@@ -14,6 +14,7 @@ import { DepartmentModule } from './modules/department/department.module';
 import { DoctorModule } from './modules/doctor/doctor.module';
 import { ScheduleModule } from './modules/schedule/schedule.module';
 import { AppointmentModule } from './modules/appointment/appointment.module';
+import { BedManagementModule } from './modules/bed-management/bed-management.module';
 import { HealthModule } from './modules/health/health.module';
 import { ShutdownService } from './common/services/shutdown.service';
 import { JwtAuthGuard } from './common/guards';
@@ -55,6 +56,7 @@ import { RolesGuard } from './common/guards';
     DoctorModule,
     ScheduleModule,
     AppointmentModule,
+    BedManagementModule,
     HealthModule,
   ],
   // Global guards (execution order: throttle → jwt auth → roles)
