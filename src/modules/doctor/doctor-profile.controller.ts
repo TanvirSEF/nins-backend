@@ -34,7 +34,7 @@ export class DoctorProfileController {
   @Post()
   @Roles(Role.SUPER_ADMIN, Role.HOSPITAL_STAFF)
   @ApiOperation({
-    summary: 'Create a doctor profile (SUPER_ADMIN, HOSPITAL_STAFF)',
+    summary: 'Onboard a doctor — create profile (SUPER_ADMIN, HOSPITAL_STAFF)',
   })
   @ApiResponse({
     status: 201,
@@ -43,10 +43,11 @@ export class DoctorProfileController {
   })
   @ApiResponse({ status: 400, description: 'Invalid input or validation error' })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
-  create(
+  @ApiResponse({ status: 409, description: 'Doctor profile already exists or BMDC already registered' })
+  onboard(
     @Body() dto: CreateDoctorProfileDto,
   ): Promise<DoctorProfileDocument> {
-    return this.doctorService.create(dto);
+    return this.doctorService.onboard(dto);
   }
 
   @Get()
