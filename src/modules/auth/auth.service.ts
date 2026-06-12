@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from '../user/user.schema';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -60,6 +61,27 @@ export class AuthService {
 
   async validateUser(userId: string): Promise<UserDocument | null> {
     return this.userModel.findById(userId).exec();
+  }
+
+  async getProfile(userId: string): Promise<UserDocument> {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    return user;
+  }
+
+  async updateProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+  ): Promise<UserDocument> {
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, dto, { new: true, runValidators: true })
+      .exec();
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    return user;
   }
 
   private generateToken(user: UserDocument): string {
