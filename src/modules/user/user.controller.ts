@@ -21,17 +21,21 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDocument } from './user.schema';
 import { User } from './user.schema';
 import { PaginationDto, ApiPaginatedResponse } from '../../common/dto';
+import { Roles } from '../../common/decorators';
+import { Role } from './user.schema';
 
-@ApiTags('users')
+@ApiTags('staff')
 @ApiBearerAuth('JWT-auth')
-@Controller('users')
+@Controller('staff')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new user' })
+  @Roles(Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Create a new user (SUPER_ADMIN only)' })
   @ApiResponse({ status: 201, description: 'User created successfully', type: User })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
+  @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   create(@Body() createUserDto: CreateUserDto): Promise<UserDocument> {
     return this.userService.create(createUserDto);
   }
@@ -54,9 +58,11 @@ export class UserController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a user' })
+  @Roles(Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Update a user (SUPER_ADMIN only)' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
   @ApiResponse({ status: 200, description: 'User updated', type: User })
+  @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   @ApiResponse({ status: 404, description: 'User not found' })
   update(
     @Param('id') id: string,
@@ -66,9 +72,11 @@ export class UserController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a user' })
+  @Roles(Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Delete a user (SUPER_ADMIN only)' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
   @ApiResponse({ status: 200, description: 'User deleted', type: User })
+  @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   @ApiResponse({ status: 404, description: 'User not found' })
   remove(@Param('id') id: string): Promise<UserDocument> {
     return this.userService.remove(id);

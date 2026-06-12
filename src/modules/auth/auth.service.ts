@@ -31,7 +31,6 @@ export class AuthService {
       email: dto.email,
       passwordHash,
       name: dto.name,
-      role: dto.role,
       phone: dto.phone,
     });
     const saved = await user.save();

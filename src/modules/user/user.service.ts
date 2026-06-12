@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from './user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -28,7 +29,14 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
-    const user = new this.userModel(createUserDto);
+    const passwordHash = await bcrypt.hash(createUserDto.password, 10);
+    const user = new this.userModel({
+      email: createUserDto.email,
+      passwordHash,
+      name: createUserDto.name,
+      role: createUserDto.role,
+      phone: createUserDto.phone,
+    });
     const saved = await user.save();
     // Invalidate all paginated list caches
     await this.invalidateListCache();

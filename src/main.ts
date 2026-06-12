@@ -58,7 +58,7 @@ async function bootstrap() {
       'JWT-auth',
     )
     .addTag('auth', 'Authentication & registration')
-    .addTag('users', 'User management')
+    .addTag('staff', 'Staff management (SUPER_ADMIN)')
     .addTag('health', 'Health check')
     .build();
   const document = SwaggerModule.createDocument(app, config);
