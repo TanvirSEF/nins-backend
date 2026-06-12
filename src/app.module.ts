@@ -20,24 +20,24 @@ import { ShutdownService } from './common/services/shutdown.service';
       validate,
     }),
 
-    // Redis Cache — falls back to in-memory if Redis unavailable
+    // Redis Cache — optimized for 4 vCPU / 8GB RAM server
     CacheModule.register({
       isGlobal: true,
       store: redisStore,
       host: process.env.REDIS_HOST || 'localhost',
       port: Number(process.env.REDIS_PORT) || 6379,
       password: process.env.REDIS_PASSWORD || undefined,
-      ttl: 60, // seconds
+      ttl: 30, // global cache TTL: 30 seconds (fresh data)
     }),
 
-    // Database with connection pooling + replica set support
+    // Database with connection pooling (100 max, 20 min)
     MongooseModule.forRootAsync(getDatabaseConfig()),
 
-    // Rate limiting — 100 requests per 60s per IP
+    // Rate limiting — 200 requests per 60s per IP
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 100,
+        limit: 200,
       },
     ]),
 

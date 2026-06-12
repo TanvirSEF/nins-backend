@@ -6,9 +6,11 @@ export const getDatabaseConfig = (): MongooseModuleAsyncOptions => ({
   inject: [ConfigService],
   useFactory: (configService: ConfigService) => ({
     uri: configService.get<string>('MONGO_URI'),
-    // ─── Connection Pool Settings ───
-    maxPoolSize: configService.get<number>('DB_POOL_SIZE', 50),
-    minPoolSize: configService.get<number>('DB_MIN_POOL_SIZE', 10),
+
+    // ─── Connection Pool (optimized for 4 vCPU / 8GB RAM) ───
+    maxPoolSize: configService.get<number>('DB_POOL_SIZE', 100),
+    minPoolSize: configService.get<number>('DB_MIN_POOL_SIZE', 20),
+    maxIdleTimeMS: 30000, // close idle connections after 30s
 
     // ─── Timeout Settings ───
     serverSelectionTimeoutMS: 5000,
@@ -21,7 +23,7 @@ export const getDatabaseConfig = (): MongooseModuleAsyncOptions => ({
     heartbeatFrequencyMS: 10000,
     bufferCommands: true,
 
-    // ─── Replica Set (auto-enabled if URI contains replicaSet param) ───
+    // ─── Replica Set ───
     readPreference: configService.get('MONGO_READ_PREFERENCE', 'primary') as any,
 
     // ─── Connection Events ───

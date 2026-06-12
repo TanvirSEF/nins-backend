@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,7 +20,7 @@ async function bootstrap() {
 
   // ─── Global prefix ───
   app.setGlobalPrefix('api', {
-    exclude: ['health'], // health check at root level for load balancers
+    exclude: ['health'],
   });
 
   // ─── Validation ───
@@ -33,7 +34,11 @@ async function bootstrap() {
 
   // ─── Global filters & interceptors ───
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalInterceptors(new LoggingInterceptor(), new TransformInterceptor());
+  app.useGlobalInterceptors(
+    new TimeoutInterceptor(),
+    new LoggingInterceptor(),
+    new TransformInterceptor(),
+  );
 
   // ─── Graceful shutdown for Docker ───
   app.enableShutdownHooks();

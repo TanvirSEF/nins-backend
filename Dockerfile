@@ -38,6 +38,10 @@ USER node
 
 WORKDIR /app
 
+# Node.js memory optimization — 512MB heap per replica
+# 3 replicas × 512MB = 1.5GB (fits in 8GB server)
+ENV NODE_OPTIONS="--max-old-space-size=512"
+
 # Copy only the built output and production node_modules from builder
 COPY --from=builder --chown=node:node /app/dist ./dist
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
