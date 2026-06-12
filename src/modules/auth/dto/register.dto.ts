@@ -2,6 +2,12 @@ import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validato
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Role } from '../../user/user.schema';
 
+export const PublicRole = {
+  HOSPITAL_STAFF: Role.HOSPITAL_STAFF,
+  DOCTOR: Role.DOCTOR,
+  PATIENT: Role.PATIENT,
+} as const;
+
 export class RegisterDto {
   @ApiProperty({
     description: 'User email address',
@@ -28,13 +34,13 @@ export class RegisterDto {
   name: string;
 
   @ApiPropertyOptional({
-    description: 'User role (defaults to PATIENT)',
-    enum: Role,
+    description: 'User role (defaults to PATIENT. SUPER_ADMIN cannot be created publicly)',
+    enum: [Role.HOSPITAL_STAFF, Role.DOCTOR, Role.PATIENT],
     example: Role.PATIENT,
     default: Role.PATIENT,
   })
   @IsOptional()
-  @IsEnum(Role)
+  @IsEnum(PublicRole)
   role?: Role;
 
   @ApiPropertyOptional({
