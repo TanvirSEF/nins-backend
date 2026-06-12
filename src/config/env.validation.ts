@@ -29,6 +29,14 @@ export class EnvironmentVariables {
   @IsOptional()
   @IsString()
   REDIS_PASSWORD: string = '';
+
+  // JWT
+  @IsString()
+  JWT_SECRET: string;
+
+  @IsOptional()
+  @IsString()
+  JWT_EXPIRES_IN: string = '7d';
 }
 
 export function validate(config: Record<string, unknown>) {
@@ -43,7 +51,9 @@ export function validate(config: Record<string, unknown>) {
   });
 
   if (errors.length > 0) {
-    const messages = errors.map((err) => Object.values(err.constraints || {}).join(', ')).join('; ');
+    const messages = errors
+      .map((err) => Object.values(err.constraints || {}).join(', '))
+      .join('; ');
     throw new Error(`Environment validation failed: ${messages}`);
   }
 

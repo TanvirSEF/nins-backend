@@ -1,2 +1,2 @@
-// Guards barrel export
-// Future: JwtAuthGuard, RolesGuard
+export { JwtAuthGuard } from './jwt-auth.guard';
+export { RolesGuard } from './roles.guard';

@@ -57,6 +57,7 @@ async function bootstrap() {
       },
       'JWT-auth',
     )
+    .addTag('auth', 'Authentication & registration')
     .addTag('users', 'User management')
     .addTag('health', 'Health check')
     .build();

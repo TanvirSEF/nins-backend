@@ -9,8 +9,11 @@ import * as redisStore from 'cache-manager-ioredis';
 import { validate } from './config/env.validation';
 import { getDatabaseConfig } from './config/database.config';
 import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
 import { ShutdownService } from './common/services/shutdown.service';
+import { JwtAuthGuard } from './common/guards';
+import { RolesGuard } from './common/guards';
 
 @Module({
   imports: [
@@ -42,14 +45,23 @@ import { ShutdownService } from './common/services/shutdown.service';
     ]),
 
     // Feature modules
+    AuthModule,
     UserModule,
     HealthModule,
   ],
-  // Global throttle guard + shutdown handler
+  // Global guards (execution order: throttle → jwt auth → roles)
   providers: [
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
     ShutdownService,
   ],
