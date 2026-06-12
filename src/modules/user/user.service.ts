@@ -6,6 +6,19 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { User, UserDocument } from './user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginationDto } from '../../common/dto';
+
+export interface PaginatedResult<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
 
 @Injectable()
 export class UserService {
@@ -17,18 +30,44 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const user = new this.userModel(createUserDto);
     const saved = await user.save();
-    // Invalidate list cache
-    await this.cacheManager.del('users:all');
+    // Invalidate all paginated list caches
+    await this.invalidateListCache();
     return saved;
   }
 
-  async findAll(): Promise<UserDocument[]> {
-    const cached = await this.cacheManager.get<UserDocument[]>('users:all');
+  async findAll(pagination: PaginationDto): Promise<PaginatedResult<UserDocument>> {
+    const { page, limit } = pagination;
+    const cacheKey = `users:page:${page}:limit:${limit}`;
+
+    const cached = await this.cacheManager.get<PaginatedResult<UserDocument>>(cacheKey);
     if (cached) return cached;
 
-    const users = await this.userModel.find().exec();
-    await this.cacheManager.set('users:all', users, 30); // cache 30s
-    return users;
+    const [users, total] = await Promise.all([
+      this.userModel
+        .find()
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec(),
+      this.userModel.countDocuments().exec(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    const result: PaginatedResult<UserDocument> = {
+      data: users,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    };
+
+    await this.cacheManager.set(cacheKey, result, 30);
+    return result;
   }
 
   async findOne(id: string): Promise<UserDocument> {
@@ -45,15 +84,13 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserDocument> {
-    const user = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
+    const user = await this.userModel
+      .findByIdAndUpdate(id, updateUserDto, { new: true, runValidators: true })
+      .exec();
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
-    // Invalidate caches
-    await Promise.all([
-      this.cacheManager.del(`users:${id}`),
-      this.cacheManager.del('users:all'),
-    ]);
+    await this.invalidateUserCache(id);
     return user;
   }
 
@@ -62,11 +99,26 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
-    // Invalidate caches
+    await this.invalidateUserCache(id);
+    return user;
+  }
+
+  /** Invalidate a single user + all paginated list caches */
+  private async invalidateUserCache(id: string): Promise<void> {
     await Promise.all([
       this.cacheManager.del(`users:${id}`),
-      this.cacheManager.del('users:all'),
+      this.invalidateListCache(),
     ]);
-    return user;
+  }
+
+  /** Invalidate all paginated list caches (up to 50 pages safety net) */
+  private async invalidateListCache(): Promise<void> {
+    const keysToDelete: Promise<any>[] = [];
+    for (let p = 1; p <= 50; p++) {
+      for (const l of [10, 25, 50, 100]) {
+        keysToDelete.push(this.cacheManager.del(`users:page:${p}:limit:${l}`));
+      }
+    }
+    await Promise.all(keysToDelete);
   }
 }

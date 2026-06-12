@@ -6,11 +6,13 @@ import {
   Delete,
   Param,
   Body,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDocument } from './user.schema';
+import { PaginationDto } from '../../common/dto';
 
 @Controller('users')
 export class UserController {
@@ -22,8 +24,8 @@ export class UserController {
   }
 
   @Get()
-  findAll(): Promise<UserDocument[]> {
-    return this.userService.findAll();
+  findAll(@Query() pagination: PaginationDto) {
+    return this.userService.findAll(pagination);
   }
 
   @Get(':id')
