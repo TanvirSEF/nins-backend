@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsNumber, IsString, validateSync } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, validateSync } from 'class-validator';
 
 export enum Environment {
   Development = 'development',
@@ -16,12 +16,26 @@ export class EnvironmentVariables {
 
   @IsNumber()
   PORT: number = 3000;
+
+  // Redis — optional, falls back to defaults
+  @IsOptional()
+  @IsString()
+  REDIS_HOST: string = 'localhost';
+
+  @IsOptional()
+  @IsNumber()
+  REDIS_PORT: number = 6379;
+
+  @IsOptional()
+  @IsString()
+  REDIS_PASSWORD: string = '';
 }
 
 export function validate(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, {
     ...config,
     PORT: config.PORT ? Number(config.PORT) : 3000,
+    REDIS_PORT: config.REDIS_PORT ? Number(config.REDIS_PORT) : 6379,
   });
 
   const errors = validateSync(validatedConfig, {

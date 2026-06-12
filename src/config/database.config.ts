@@ -21,6 +21,9 @@ export const getDatabaseConfig = (): MongooseModuleAsyncOptions => ({
     heartbeatFrequencyMS: 10000,
     bufferCommands: true,
 
+    // ─── Replica Set (auto-enabled if URI contains replicaSet param) ───
+    readPreference: configService.get('MONGO_READ_PREFERENCE', 'primary') as any,
+
     // ─── Connection Events ───
     connectionFactory: (connection: Connection) => {
       connection.on('connected', () => {
@@ -32,18 +35,6 @@ export const getDatabaseConfig = (): MongooseModuleAsyncOptions => ({
       connection.on('error', (err) => {
         console.error('MongoDB connection error:', err.message);
       });
-      // Log pool stats every 60s in production
-      if (configService.get('NODE_ENV') === 'production') {
-        setInterval(() => {
-          // @ts-expect-error - internal property for monitoring
-          const pool = connection.client?.topology?.s?.pool;
-          if (pool) {
-            console.log(
-              `DB Pool — available: ${pool.availableConnectionCount}, pending: ${pool.waitQueueSize}, total: ${pool.connectionCount}`,
-            );
-          }
-        }, 60000);
-      }
       return connection;
     },
   }),
