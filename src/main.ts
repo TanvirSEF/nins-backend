@@ -21,7 +21,7 @@ async function bootstrap() {
 
   // ─── Global prefix ───
   app.setGlobalPrefix('api', {
-    exclude: ['health'],
+    exclude: ['health', 'docs', 'docs-json', 'docs-yaml'],
   });
 
   // ─── Validation ───
@@ -79,6 +79,6 @@ async function bootstrap() {
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
   console.log(`Application running on http://localhost:${port}/api`);
-  console.log(`Swagger docs at    http://localhost:${port}/api/docs`);
+  console.log(`Swagger docs at    http://localhost:${port}/docs`);
 }
 bootstrap();
