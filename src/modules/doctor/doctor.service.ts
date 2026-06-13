@@ -19,6 +19,7 @@ import {
 } from '../department/department.schema';
 import { User, UserDocument } from '../user/user.schema';
 import { Role } from '../user/user.schema';
+import { ImageService } from '../upload/image.service';
 import { CreateDoctorProfileDto } from './dto/create-doctor-profile.dto';
 import { UpdateDoctorProfileDto } from './dto/update-doctor-profile.dto';
 import { DoctorFilterDto } from './dto/doctor-filter.dto';
@@ -44,8 +45,30 @@ export class DoctorService {
     private deptModel: Model<DepartmentDocument>,
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
+    private imageService: ImageService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
+
+  // ─── Upload profile picture ──────────────────────────────────────────────────
+  async updateProfilePicture(
+    id: string,
+    file: Express.Multer.File,
+  ): Promise<DoctorProfileDocument> {
+    const { url } = await this.imageService.uploadImage(file, 'doctors');
+
+    const updated = await this.doctorModel
+      .findByIdAndUpdate(id, { profilePicture: url }, { new: true })
+      .populate('userId', 'name email phone')
+      .populate('departmentId', 'name code')
+      .exec();
+
+    if (!updated) {
+      throw new NotFoundException(`Doctor profile #${id} not found`);
+    }
+
+    await this.invalidateDoctorCache(id);
+    return updated;
+  }
 
   async onboard(dto: CreateDoctorProfileDto): Promise<DoctorProfileDocument> {
     // ─── Duplicate Checks ──────────────────────────────────────────────────

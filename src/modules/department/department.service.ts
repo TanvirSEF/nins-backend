@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Department, DepartmentDocument } from './department.schema';
+import { ImageService } from '../upload/image.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { PaginationDto } from '../../common/dto';
@@ -24,8 +25,28 @@ export interface PaginatedResult<T> {
 export class DepartmentService {
   constructor(
     @InjectModel(Department.name) private deptModel: Model<DepartmentDocument>,
+    private imageService: ImageService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
+
+  // ─── Upload department image/logo ────────────────────────────────────────────
+  async updateImage(
+    id: string,
+    file: Express.Multer.File,
+  ): Promise<DepartmentDocument> {
+    const { url } = await this.imageService.uploadImage(file, 'departments');
+
+    const updated = await this.deptModel
+      .findByIdAndUpdate(id, { image: url }, { new: true })
+      .exec();
+
+    if (!updated) {
+      throw new NotFoundException(`Department #${id} not found`);
+    }
+
+    await this.invalidateListCache();
+    return updated;
+  }
 
   async create(dto: CreateDepartmentDto): Promise<DepartmentDocument> {
     const dept = new this.deptModel(dto);

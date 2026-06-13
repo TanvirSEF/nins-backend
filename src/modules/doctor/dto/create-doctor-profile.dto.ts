@@ -80,4 +80,12 @@ export class CreateDoctorProfileDto {
   @IsOptional()
   @IsString()
   availability?: string;
+
+  @ApiPropertyOptional({
+    description: 'Profile picture public URL',
+    example: 'https://cdn.nins.gov.bd/images/doctors/abc.jpg',
+  })
+  @IsOptional()
+  @IsString()
+  profilePicture?: string;
 }

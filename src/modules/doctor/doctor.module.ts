@@ -8,9 +8,11 @@ import {
 } from './doctor-profile.schema';
 import { Department, DepartmentSchema } from '../department/department.schema';
 import { User, UserSchema } from '../user/user.schema';
+import { UploadModule } from '../upload/upload.module';
 
 @Module({
   imports: [
+    UploadModule,
     MongooseModule.forFeature([
       { name: DoctorProfile.name, schema: DoctorProfileSchema },
       { name: Department.name, schema: DepartmentSchema },

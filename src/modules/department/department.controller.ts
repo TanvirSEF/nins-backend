@@ -7,13 +7,17 @@ import {
   Param,
   Body,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiParam,
   ApiBearerAuth,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
@@ -57,6 +61,22 @@ export class DepartmentController {
   @ApiResponse({ status: 404, description: 'Department not found' })
   findOne(@Param('id') id: string): Promise<DepartmentDocument> {
     return this.departmentService.findOne(id);
+  }
+
+  @Patch(':id/image')
+  @Roles(Role.SUPER_ADMIN)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Upload department image/logo (SUPER_ADMIN)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'Department ObjectId', type: String })
+  @ApiResponse({ status: 200, description: 'Image updated', type: Department })
+  @ApiResponse({ status: 400, description: 'Invalid image or size > 5MB' })
+  @ApiResponse({ status: 404, description: 'Department not found' })
+  uploadImage(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<DepartmentDocument> {
+    return this.departmentService.updateImage(id, file);
   }
 
   @Patch(':id')

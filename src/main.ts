@@ -69,6 +69,7 @@ async function bootstrap() {
     .addTag('files', 'File uploads (Cloudflare R2)')
     .addTag('pathology-reports', 'Pathology & test reports')
     .addTag('leave', 'Doctor leave management')
+    .addTag('gallery', 'Hospital gallery images')
     .addTag('health', 'Health check')
     .addTag('medical-records', 'Patient medical records')
     .addTag('prescriptions', 'Doctor prescriptions')

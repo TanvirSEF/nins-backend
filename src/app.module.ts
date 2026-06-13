@@ -24,6 +24,7 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { PathologyModule } from './modules/pathology/pathology.module';
 import { LeaveModule } from './modules/leave/leave.module';
+import { GalleryModule } from './modules/gallery/gallery.module';
 import { ShutdownService } from './common/services/shutdown.service';
 import { JwtAuthGuard } from './common/guards';
 import { RolesGuard } from './common/guards';
@@ -74,6 +75,7 @@ import { RolesGuard } from './common/guards';
     UploadModule,
     PathologyModule,
     LeaveModule,
+    GalleryModule,
   ],
   // Global guards (execution order: throttle → jwt auth → roles)
   providers: [

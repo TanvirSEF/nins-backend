@@ -42,6 +42,13 @@ export class Department {
   description?: string;
 
   @ApiPropertyOptional({
+    description: 'Department image/logo public URL',
+    example: 'https://cdn.nins.gov.bd/images/departments/neurology.jpg',
+  })
+  @Prop({ trim: true })
+  image?: string;
+
+  @ApiPropertyOptional({
     description: 'Hospital units under this department',
     type: [HospitalUnit],
     example: [

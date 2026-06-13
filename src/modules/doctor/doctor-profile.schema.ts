@@ -71,6 +71,13 @@ export class DoctorProfile {
   @Prop()
   availability?: string;
 
+  @ApiPropertyOptional({
+    description: 'Profile picture public URL',
+    example: 'https://cdn.nins.gov.bd/images/doctors/abc.jpg',
+  })
+  @Prop({ trim: true })
+  profilePicture?: string;
+
   @ApiProperty({ description: 'Creation date' })
   createdAt?: Date;
 

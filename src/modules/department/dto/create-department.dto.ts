@@ -47,6 +47,14 @@ export class CreateDepartmentDto {
   description?: string;
 
   @ApiPropertyOptional({
+    description: 'Department image/logo public URL',
+    example: 'https://cdn.nins.gov.bd/images/departments/neurology.jpg',
+  })
+  @IsOptional()
+  @IsString()
+  image?: string;
+
+  @ApiPropertyOptional({
     description: 'Hospital units under this department',
     type: [HospitalUnitDto],
     example: [{ name: 'Stroke Unit', code: 'STROKE-UNIT' }],

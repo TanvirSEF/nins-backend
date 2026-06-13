@@ -7,13 +7,17 @@ import {
   Param,
   Body,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiParam,
   ApiBearerAuth,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import { DoctorService } from './doctor.service';
 import { CreateDoctorProfileDto } from './dto/create-doctor-profile.dto';
@@ -71,6 +75,26 @@ export class DoctorProfileController {
   @ApiResponse({ status: 404, description: 'Doctor profile not found' })
   findOne(@Param('id') id: string): Promise<DoctorProfileDocument> {
     return this.doctorService.findOne(id);
+  }
+
+  @Patch(':id/profile-picture')
+  @Roles(Role.SUPER_ADMIN)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Upload doctor profile picture (SUPER_ADMIN)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'DoctorProfile ObjectId', type: String })
+  @ApiResponse({
+    status: 200,
+    description: 'Profile picture updated',
+    type: DoctorProfile,
+  })
+  @ApiResponse({ status: 400, description: 'Invalid image or size > 5MB' })
+  @ApiResponse({ status: 404, description: 'Doctor profile not found' })
+  uploadProfilePicture(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<DoctorProfileDocument> {
+    return this.doctorService.updateProfilePicture(id, file);
   }
 
   @Patch(':id')
