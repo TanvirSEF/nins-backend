@@ -64,6 +64,7 @@ async function bootstrap() {
     .addTag('bed-management', 'ICU & HDU bed tracking')
     .addTag('schedules', 'Doctor schedules')
     .addTag('staff', 'Staff management (SUPER_ADMIN)')
+    .addTag('payments', 'Appointment registration payments')
     .addTag('health', 'Health check')
     .addTag('medical-records', 'Patient medical records')
     .addTag('prescriptions', 'Doctor prescriptions')

@@ -37,6 +37,24 @@ export class EnvironmentVariables {
   @IsOptional()
   @IsString()
   JWT_EXPIRES_IN: string = '7d';
+
+  // SSLCommerz Payment Gateway
+  @IsString()
+  SSLCOMMERZ_STORE_ID: string;
+
+  @IsString()
+  SSLCOMMERZ_STORE_PASSWORD: string;
+
+  @IsOptional()
+  @IsString()
+  SSLCOMMERZ_IS_LIVE: string = 'false';
+
+  @IsOptional()
+  @IsString()
+  APPOINTMENT_FEE: string = '50';
+
+  @IsString()
+  BACKEND_URL: string;
 }
 
 export function validate(config: Record<string, unknown>) {
