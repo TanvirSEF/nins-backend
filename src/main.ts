@@ -65,6 +65,9 @@ async function bootstrap() {
     .addTag('schedules', 'Doctor schedules')
     .addTag('staff', 'Staff management (SUPER_ADMIN)')
     .addTag('health', 'Health check')
+    .addTag('medical-records', 'Patient medical records')
+    .addTag('prescriptions', 'Doctor prescriptions')
+    .addTag('dashboard', 'Admin dashboard & statistics')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document, {
