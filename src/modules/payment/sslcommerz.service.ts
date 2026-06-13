@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import SSLCommerzPayment from 'sslcommerz-lts';
+import SSLCommerzPayment = require('sslcommerz-lts');
 
 @Injectable()
 export class SslCommerzService {

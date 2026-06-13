@@ -16,5 +16,5 @@ declare module 'sslcommerz-lts' {
       sessionkey: string;
     }): Promise<any>;
   }
-  export default SSLCommerzPayment;
+  export = SSLCommerzPayment;
 }
