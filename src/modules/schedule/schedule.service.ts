@@ -13,6 +13,13 @@ import {
   DoctorProfile,
   DoctorProfileDocument,
 } from '../doctor/doctor-profile.schema';
+import {
+  Appointment,
+  AppointmentDocument,
+  AppointmentStatus,
+} from '../appointment/appointment.schema';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationType } from '../notification/notification.schema';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 
@@ -23,7 +30,10 @@ export class ScheduleService {
     private scheduleModel: Model<ScheduleDocument>,
     @InjectModel(DoctorProfile.name)
     private doctorModel: Model<DoctorProfileDocument>,
+    @InjectModel(Appointment.name)
+    private appointmentModel: Model<AppointmentDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private notificationService: NotificationService,
   ) {}
 
   async create(dto: CreateScheduleDto): Promise<ScheduleDocument> {
@@ -138,6 +148,8 @@ export class ScheduleService {
       throw new NotFoundException(`Schedule #${id} not found`);
     }
     await this.invalidateScheduleCache(String(schedule.doctorId));
+    // Notify affected patients about schedule change
+    await this.notifyScheduleChange(schedule.doctorId, 'updated');
     return schedule;
   }
 
@@ -147,7 +159,44 @@ export class ScheduleService {
       throw new NotFoundException(`Schedule #${id} not found`);
     }
     await this.invalidateScheduleCache(String(schedule.doctorId));
+    // Notify affected patients about schedule removal
+    await this.notifyScheduleChange(schedule.doctorId, 'cancelled');
     return schedule;
+  }
+
+  // ─── Notify affected patients about a schedule change ───────────────────────
+  private async notifyScheduleChange(
+    doctorId: Types.ObjectId,
+    reason: string,
+  ): Promise<void> {
+    try {
+      const doctor = await this.doctorModel.findById(doctorId).exec();
+      const doctorName = doctor ? '' : ''; // designation used in message
+      const designation = doctor?.designation;
+
+      const affectedAppointments = await this.appointmentModel
+        .find({
+          doctorId,
+          status: { $ne: AppointmentStatus.CANCELLED },
+        })
+        .populate('patientId', 'name email')
+        .exec();
+
+      const notifications = affectedAppointments.map((appt: any) =>
+        this.notificationService
+          .notify(String(appt.patientId._id), NotificationType.SCHEDULE_CHANGED, {
+            doctorName,
+            designation,
+            reason: `Doctor's schedule has been ${reason}.`,
+            appointmentDate: appt.appointmentDate,
+            serialNumber: appt.serialNumber,
+          })
+          .catch(() => null),
+      );
+      await Promise.all(notifications);
+    } catch {
+      // Notification failures should never break schedule operations
+    }
   }
 
   private async invalidateScheduleCache(doctorId: string): Promise<void> {

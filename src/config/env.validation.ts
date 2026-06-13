@@ -55,6 +55,14 @@ export class EnvironmentVariables {
 
   @IsString()
   BACKEND_URL: string;
+
+  // Email (Resend)
+  @IsString()
+  RESEND_API_KEY: string;
+
+  @IsOptional()
+  @IsString()
+  MAIL_FROM: string = 'NINS Hospital <onboarding@resend.dev>';
 }
 
 export function validate(config: Record<string, unknown>) {

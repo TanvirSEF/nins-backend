@@ -7,12 +7,14 @@ import {
   DoctorProfile,
   DoctorProfileSchema,
 } from '../doctor/doctor-profile.schema';
+import { Appointment, AppointmentSchema } from '../appointment/appointment.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Schedule.name, schema: ScheduleSchema },
       { name: DoctorProfile.name, schema: DoctorProfileSchema },
+      { name: Appointment.name, schema: AppointmentSchema },
     ]),
   ],
   controllers: [ScheduleController],

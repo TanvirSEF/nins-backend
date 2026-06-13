@@ -20,6 +20,7 @@ import { HealthModule } from './modules/health/health.module';
 import { MedicalRecordModule } from './modules/medical-record/medical-record.module';
 import { PrescriptionModule } from './modules/prescription/prescription.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { NotificationModule } from './modules/notification/notification.module';
 import { ShutdownService } from './common/services/shutdown.service';
 import { JwtAuthGuard } from './common/guards';
 import { RolesGuard } from './common/guards';
@@ -66,6 +67,7 @@ import { RolesGuard } from './common/guards';
     MedicalRecordModule,
     PrescriptionModule,
     DashboardModule,
+    NotificationModule,
   ],
   // Global guards (execution order: throttle → jwt auth → roles)
   providers: [

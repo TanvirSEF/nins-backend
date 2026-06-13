@@ -24,6 +24,8 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { AppointmentFilterDto } from './dto/appointment-filter.dto';
 import { Role, UserDocument } from '../user/user.schema';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationType } from '../notification/notification.schema';
 
 export interface PaginatedResult<T> {
   data: T[];
@@ -47,6 +49,7 @@ export class AppointmentService {
     @InjectModel(Schedule.name)
     private scheduleModel: Model<ScheduleDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private notificationService: NotificationService,
   ) {}
 
   async createAppointment(
@@ -136,6 +139,17 @@ export class AppointmentService {
 
     // ─── 9. Cache Invalidation ──────────────────────────────────────────────
     await this.invalidateAppointmentCache(patientId, dto.doctorId);
+
+    // ─── 10. Notification: Appointment Booked ────────────────────────────────
+    await this.notificationService
+      .notify(patientId, NotificationType.APPOINTMENT_BOOKED, {
+        doctorName: '',
+        designation: doctor.designation,
+        appointmentDate: saved.appointmentDate,
+        serialNumber: saved.serialNumber,
+        appointmentId: String(saved._id),
+      })
+      .catch(() => null);
 
     return saved;
   }
@@ -246,6 +260,7 @@ export class AppointmentService {
     }
 
     // ─── Role-based status transitions ──────────────────────────────────────
+    const prevStatus = appointment.status;
     if (user.role === Role.PATIENT) {
       // Patients can only CANCEL their own appointments
       if (!appointment.patientId.equals(user._id)) {
@@ -264,6 +279,29 @@ export class AppointmentService {
       String(appointment.patientId),
       String(appointment.doctorId),
     );
+
+    // ─── Notification: Status Changed / Cancelled ─────────────────────────────
+    if (prevStatus !== dto.status) {
+      const doctor = await this.doctorModel
+        .findById(appointment.doctorId)
+        .exec();
+      const notifType =
+        dto.status === AppointmentStatus.CANCELLED
+          ? NotificationType.APPOINTMENT_CANCELLED
+          : dto.status === AppointmentStatus.COMPLETED
+            ? NotificationType.APPOINTMENT_COMPLETED
+            : NotificationType.APPOINTMENT_STATUS_CHANGED;
+
+      await this.notificationService
+        .notify(String(appointment.patientId), notifType, {
+          doctorName: '',
+          designation: doctor?.designation,
+          appointmentDate: appointment.appointmentDate,
+          serialNumber: appointment.serialNumber,
+          status: dto.status,
+        })
+        .catch(() => null);
+    }
 
     return updated;
   }

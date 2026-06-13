@@ -20,6 +20,8 @@ import {
 } from '../appointment/appointment.schema';
 import { User, UserDocument } from '../user/user.schema';
 import { SslCommerzService } from './sslcommerz.service';
+import { NotificationService } from '../notification/notification.service';
+import { NotificationType } from '../notification/notification.schema';
 import { PaymentFilterDto } from './dto/payment-filter.dto';
 
 export interface PaginatedResult<T> {
@@ -48,6 +50,7 @@ export class PaymentService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private sslCommerzService: SslCommerzService,
+    private notificationService: NotificationService,
     private configService: ConfigService,
   ) {
     this.appointmentFee = parseFloat(
@@ -301,6 +304,20 @@ export class PaymentService {
         this.logger.log(
           `Payment validated — tranId: ${tran_id}, appointment confirmed`,
         );
+
+        // 8. Notification: Appointment Confirmed (real-time + email)
+        const appointment = await this.appointmentModel
+          .findById(payment.appointmentId)
+          .exec();
+        await this.notificationService
+          .notify(String(payment.patientId), NotificationType.APPOINTMENT_CONFIRMED, {
+            appointmentDate: appointment?.appointmentDate,
+            serialNumber: appointment?.serialNumber,
+            amount: payment.amount,
+            tranId: payment.tranId,
+            appointmentId: String(payment.appointmentId),
+          })
+          .catch(() => null);
       } else {
         payment.status = PaymentStatus.FAILED;
         payment.errorReason = `Validation failed: ${validation?.status || 'Unknown'}`;
