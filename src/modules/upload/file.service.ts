@@ -82,6 +82,9 @@ export class FileService {
       region: 'auto',
       endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
       credentials: { accessKeyId: accessKeyId!, secretAccessKey: secretAccessKey! },
+      // R2 does not support the AWS SDK v3 default checksum middleware — disable it
+      requestChecksumCalculation: 'WHEN_REQUIRED',
+      responseChecksumValidation: 'WHEN_REQUIRED',
     });
 
     this.logger.log(
@@ -131,7 +134,6 @@ export class FileService {
         Bucket: this.bucket,
         Key: r2Key,
         ContentType: dto.mimeType,
-        ContentLength: dto.sizeBytes,
       });
       const presignedUrl = await getSignedUrl(
         this.s3,
