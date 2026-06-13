@@ -1,4 +1,4 @@
-import Excel from 'exceljs';
+import Excel = require('exceljs');
 
 export interface ExcelSheet {
   name: string;
