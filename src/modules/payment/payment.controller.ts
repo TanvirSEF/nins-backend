@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  All,
   Param,
   Query,
   Body,
@@ -56,37 +57,44 @@ export class PaymentController {
     return { status: 'OK' };
   }
 
-  @Get('callback/success')
+  @All('callback/success')
   @Public()
   @ApiOperation({ summary: 'SSLCommerz success redirect handler (public)' })
   @ApiQuery({ name: 'tran_id', description: 'Transaction ID', type: String })
   @ApiResponse({ status: 200, description: 'Payment success info' })
   async handleSuccess(
     @Query() query: Record<string, any>,
+    @Body() body: Record<string, any>,
   ): Promise<{ success: boolean; tranId?: string; message: string }> {
-    return this.paymentService.handleSuccess(query);
+    // SSLCommerz may send data via query (GET redirect) or body (POST)
+    const data = Object.keys(body || {}).length > 0 ? body : query;
+    return this.paymentService.handleSuccess(data);
   }
 
-  @Get('callback/fail')
+  @All('callback/fail')
   @Public()
   @ApiOperation({ summary: 'SSLCommerz fail redirect handler (public)' })
   @ApiQuery({ name: 'tran_id', description: 'Transaction ID', type: String })
   @ApiResponse({ status: 200, description: 'Payment failure info' })
   async handleFail(
     @Query() query: Record<string, any>,
+    @Body() body: Record<string, any>,
   ): Promise<{ success: boolean; tranId?: string; message: string }> {
-    return this.paymentService.handleFail(query);
+    const data = Object.keys(body || {}).length > 0 ? body : query;
+    return this.paymentService.handleFail(data);
   }
 
-  @Get('callback/cancel')
+  @All('callback/cancel')
   @Public()
   @ApiOperation({ summary: 'SSLCommerz cancel redirect handler (public)' })
   @ApiQuery({ name: 'tran_id', description: 'Transaction ID', type: String })
   @ApiResponse({ status: 200, description: 'Payment cancelled info' })
   async handleCancel(
     @Query() query: Record<string, any>,
+    @Body() body: Record<string, any>,
   ): Promise<{ success: boolean; tranId?: string; message: string }> {
-    return this.paymentService.handleCancel(query);
+    const data = Object.keys(body || {}).length > 0 ? body : query;
+    return this.paymentService.handleCancel(data);
   }
 
   @Get('history')
