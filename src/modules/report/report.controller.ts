@@ -77,16 +77,21 @@ export class ReportController {
     @Query('endDate') endDate: string | undefined,
     @Res() res: Response,
   ) {
-    const buffer = await this.reportService.generatePatientReport(
-      startDate,
-      endDate,
-      'excel',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename=patients-report.xlsx`,
-    );
-    res.send(buffer);
+    try {
+      const buffer = await this.reportService.generatePatientReport(
+        startDate,
+        endDate,
+        'excel',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=patients-report.xlsx`,
+      );
+      res.send(buffer);
+    } catch (error) {
+      console.error('PATIENT EXCEL ERROR:', error);
+      res.status(500).json({ error: error.message, stack: error.stack });
+    }
   }
 
   @Get('patients/pdf')
