@@ -20,6 +20,11 @@ import {
   DoctorProfileDocument,
 } from '../doctor/doctor-profile.schema';
 import { Schedule, ScheduleDocument } from '../schedule/schedule.schema';
+import {
+  Leave,
+  LeaveDocument,
+  LeaveStatus,
+} from '../leave/leave.schema';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { AppointmentFilterDto } from './dto/appointment-filter.dto';
@@ -48,6 +53,8 @@ export class AppointmentService {
     private doctorModel: Model<DoctorProfileDocument>,
     @InjectModel(Schedule.name)
     private scheduleModel: Model<ScheduleDocument>,
+    @InjectModel(Leave.name)
+    private leaveModel: Model<LeaveDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private notificationService: NotificationService,
   ) {}
@@ -84,6 +91,21 @@ export class AppointmentService {
     if (requestedDay !== schedule.dayOfWeek) {
       throw new BadRequestException(
         'Doctor is not available on this day',
+      );
+    }
+
+    // ─── 4b. Doctor Leave Check ────────────────────────────────────────────
+    const onLeave = await this.leaveModel
+      .findOne({
+        doctorId: doctorObjectId,
+        status: LeaveStatus.APPROVED,
+        startDate: { $lte: this.endOfDay(appointmentDate) },
+        endDate: { $gte: this.startOfDay(appointmentDate) },
+      })
+      .exec();
+    if (onLeave) {
+      throw new BadRequestException(
+        'Doctor is on leave on the selected date. Please choose another date.',
       );
     }
 

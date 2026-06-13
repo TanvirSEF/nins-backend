@@ -37,6 +37,7 @@ const EMAIL_ELIGIBLE_TYPES: NotificationType[] = [
   NotificationType.APPOINTMENT_CONFIRMED,
   NotificationType.APPOINTMENT_CANCELLED,
   NotificationType.SCHEDULE_CHANGED,
+  NotificationType.PATHOLOGY_REPORT_READY,
 ];
 
 @Injectable()
@@ -162,6 +163,31 @@ export class NotificationService {
           title: 'Schedule Updated',
           message: `There is an update regarding your appointment with ${designation} ${doctorName}. ${data.reason || 'Please check your appointments.'}`,
         };
+      case NotificationType.LEAVE_REQUESTED:
+        return {
+          title: 'New Leave Request',
+          message: `A leave request has been submitted by ${data.doctorDesignation || 'a doctor'} for ${data.startDate ? new Date(data.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}${data.endDate ? ' - ' + new Date(data.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}. Please review.`,
+        };
+      case NotificationType.LEAVE_APPROVED:
+        return {
+          title: 'Leave Approved',
+          message: `Your leave request${data.startDate ? ' from ' + new Date(data.startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}${data.endDate ? ' to ' + new Date(data.endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''} has been approved.`,
+        };
+      case NotificationType.LEAVE_REJECTED:
+        return {
+          title: 'Leave Rejected',
+          message: `Your leave request has been rejected${data.reason ? ': ' + data.reason : '.'}`,
+        };
+      case NotificationType.TEST_ORDERED:
+        return {
+          title: 'New Test Ordered',
+          message: `A ${data.testCategory || ''} test "${data.testName || ''}" has been ordered for you. Please visit the pathology department.`,
+        };
+      case NotificationType.PATHOLOGY_REPORT_READY:
+        return {
+          title: 'Pathology Report Ready',
+          message: `Your ${data.testName || 'pathology'} report is now ready. You can view it in your reports section.`,
+        };
       default:
         return {
           title: 'Notification',
@@ -189,6 +215,8 @@ export class NotificationService {
       amount: data.amount,
       tranId: data.tranId,
       reason: data.reason,
+      testName: data.testName,
+      reportId: data.reportId,
     };
 
     switch (type) {
@@ -200,6 +228,8 @@ export class NotificationService {
         return this.mailService.sendAppointmentCancelled(to, name, emailData);
       case NotificationType.SCHEDULE_CHANGED:
         return this.mailService.sendScheduleChanged(to, name, emailData);
+      case NotificationType.PATHOLOGY_REPORT_READY:
+        return this.mailService.sendPathologyReportReady(to, name, emailData);
       default:
         return false;
     }

@@ -177,4 +177,31 @@ export class MailService {
     `;
     return this.send(to, subject, html);
   }
+
+  async sendPathologyReportReady(
+    to: string,
+    name: string,
+    data: { testName?: string; reportId?: string },
+  ): Promise<boolean> {
+    const subject = 'Pathology Report Ready - NINS Hospital';
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: #0891b2; color: white; padding: 20px; text-align: center;">
+          <h1>NINS Hospital</h1>
+        </div>
+        <div style="padding: 20px; background: #f9fafb;">
+          <h2>Dear ${name},</h2>
+          <p>Your pathology report is now <strong style="color: #0891b2;">ready</strong>.</p>
+          <div style="background: white; padding: 15px; border-left: 4px solid #0891b2; margin: 15px 0;">
+            <p><strong>Test:</strong> ${data.testName || 'Pathology Test'}</p>
+          </div>
+          <p>Please log in to your account to view the full report.</p>
+        </div>
+        <div style="padding: 15px; text-align: center; color: #6b7280; font-size: 12px;">
+          <p>This is an automated message from NINS Hospital. Please do not reply.</p>
+        </div>
+      </div>
+    `;
+    return this.send(to, subject, html);
+  }
 }

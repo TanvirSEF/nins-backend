@@ -9,6 +9,7 @@ import {
 } from '../doctor/doctor-profile.schema';
 import { Schedule, ScheduleSchema } from '../schedule/schedule.schema';
 import { User, UserSchema } from '../user/user.schema';
+import { Leave, LeaveSchema } from '../leave/leave.schema';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { User, UserSchema } from '../user/user.schema';
       { name: DoctorProfile.name, schema: DoctorProfileSchema },
       { name: Schedule.name, schema: ScheduleSchema },
       { name: User.name, schema: UserSchema },
+      { name: Leave.name, schema: LeaveSchema },
     ]),
   ],
   controllers: [AppointmentController],

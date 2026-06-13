@@ -63,6 +63,23 @@ export class EnvironmentVariables {
   @IsOptional()
   @IsString()
   MAIL_FROM: string = 'NINS Hospital <onboarding@resend.dev>';
+
+  // Cloudflare R2 (file storage)
+  @IsString()
+  R2_ACCOUNT_ID: string;
+
+  @IsString()
+  R2_ACCESS_KEY_ID: string;
+
+  @IsString()
+  R2_SECRET_ACCESS_KEY: string;
+
+  @IsString()
+  R2_BUCKET_NAME: string;
+
+  @IsOptional()
+  @IsString()
+  R2_PUBLIC_BASE_URL: string = '';
 }
 
 export function validate(config: Record<string, unknown>) {
