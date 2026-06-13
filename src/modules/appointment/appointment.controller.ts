@@ -7,7 +7,10 @@ import {
   Param,
   Body,
   Query,
+  Res,
+  Header,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -46,6 +49,48 @@ export class AppointmentController {
     @CurrentUser() user: UserDocument,
   ): Promise<AppointmentDocument> {
     return this.appointmentService.createAppointment(dto, String(user._id));
+  }
+
+  @Post('book')
+  @Roles(Role.PATIENT)
+  @ApiOperation({
+    summary: 'Book appointment + initiate payment in one step (PATIENT)',
+  })
+  @ApiResponse({ status: 201, description: 'Returns gateway URL for payment' })
+  @ApiResponse({ status: 400, description: 'Booking validation or gateway error' })
+  @ApiResponse({ status: 409, description: 'Duplicate booking' })
+  async bookWithPayment(
+    @Body() dto: CreateAppointmentDto,
+    @CurrentUser() user: UserDocument,
+  ): Promise<{ appointmentId: string; tranId: string; gatewayPageURL: string }> {
+    return this.appointmentService.bookWithPayment(dto, String(user._id));
+  }
+
+  @Get(':id/ticket')
+  @ApiOperation({ summary: 'Download appointment ticket as PDF (confirmed only)' })
+  @ApiParam({ name: 'id', description: 'Appointment ObjectId', type: String })
+  @ApiResponse({ status: 200, description: 'PDF ticket' })
+  @ApiResponse({ status: 400, description: 'Appointment not confirmed or not paid' })
+  @ApiResponse({ status: 403, description: 'Not your appointment' })
+  @ApiResponse({ status: 404, description: 'Appointment not found' })
+  @Header('Content-Type', 'application/pdf')
+  async getTicket(
+    @Param('id') id: string,
+    @Res({ passthrough: true }) res: Response,
+    @CurrentUser() user: UserDocument,
+  ): Promise<Buffer> {
+    const isStaff =
+      user.role === Role.SUPER_ADMIN || user.role === Role.HOSPITAL_STAFF;
+    const buffer = await this.appointmentService.getTicket(
+      id,
+      String(user._id),
+      isStaff,
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=ticket-${id}.pdf`,
+    );
+    return buffer;
   }
 
   @Get('my-tickets')

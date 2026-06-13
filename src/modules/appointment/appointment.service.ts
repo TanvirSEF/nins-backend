@@ -31,6 +31,10 @@ import { AppointmentFilterDto } from './dto/appointment-filter.dto';
 import { Role, UserDocument } from '../user/user.schema';
 import { NotificationService } from '../notification/notification.service';
 import { NotificationType } from '../notification/notification.schema';
+import { Payment, PaymentDocument, PaymentStatus } from '../payment/payment.schema';
+import { SslCommerzService } from '../payment/sslcommerz.service';
+import { TicketService } from './ticket.service';
+import { ConfigService } from '@nestjs/config';
 
 export interface PaginatedResult<T> {
   data: T[];
@@ -46,6 +50,9 @@ export interface PaginatedResult<T> {
 
 @Injectable()
 export class AppointmentService {
+  private readonly appointmentFee: number;
+  private readonly backendUrl: string;
+
   constructor(
     @InjectModel(Appointment.name)
     private appointmentModel: Model<AppointmentDocument>,
@@ -55,9 +62,19 @@ export class AppointmentService {
     private scheduleModel: Model<ScheduleDocument>,
     @InjectModel(Leave.name)
     private leaveModel: Model<LeaveDocument>,
+    @InjectModel(Payment.name)
+    private paymentModel: Model<PaymentDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private notificationService: NotificationService,
-  ) {}
+    private sslCommerzService: SslCommerzService,
+    private ticketService: TicketService,
+    private configService: ConfigService,
+  ) {
+    this.appointmentFee = parseFloat(
+      this.configService.get<string>('APPOINTMENT_FEE', '50'),
+    );
+    this.backendUrl = this.configService.get<string>('BACKEND_URL')!;
+  }
 
   async createAppointment(
     dto: CreateAppointmentDto,
@@ -174,6 +191,107 @@ export class AppointmentService {
       .catch(() => null);
 
     return saved;
+  }
+
+  // ─── Combined: Book appointment + initiate payment in one step ───────────────
+  async bookWithPayment(
+    dto: CreateAppointmentDto,
+    userId: string,
+  ): Promise<{ appointmentId: string; tranId: string; gatewayPageURL: string }> {
+    // 1. Run full booking validation + create PENDING appointment (reuse create)
+    const appointment = await this.createAppointment(dto, userId);
+
+    try {
+      // 2. Generate transaction ID (existing pattern)
+      const tranId = `NINS-${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2, 8)}`;
+
+      // 3. Fetch user for customer fields
+      const user = await this.appointmentModel.db
+        .collection('users')
+        .findOne({ _id: new Types.ObjectId(userId) });
+
+      // 4. Create PENDING payment
+      const payment = new this.paymentModel({
+        appointmentId: appointment._id,
+        patientId: appointment.patientId,
+        tranId,
+        amount: this.appointmentFee,
+        currency: 'BDT',
+        status: PaymentStatus.PENDING,
+      });
+      const savedPayment = await payment.save();
+
+      // 5. Build SSLCommerz payload
+      const sslData = {
+        total_amount: this.appointmentFee,
+        currency: 'BDT',
+        tran_id: tranId,
+        success_url: `${this.backendUrl}/api/payments/callback/success`,
+        fail_url: `${this.backendUrl}/api/payments/callback/fail`,
+        cancel_url: `${this.backendUrl}/api/payments/callback/cancel`,
+        ipn_url: `${this.backendUrl}/api/payments/ipn`,
+        product_name: 'Appointment Registration Fee',
+        product_category: 'healthcare',
+        product_profile: 'general',
+        shipping_method: 'NO',
+        num_of_item: 1,
+        product_amount: this.appointmentFee,
+        cus_name: (user as any)?.name || 'Patient',
+        cus_email: (user as any)?.email,
+        cus_add1: 'NINS Hospital',
+        cus_city: 'Dhaka',
+        cus_postcode: '1207',
+        cus_country: 'Bangladesh',
+        cus_phone: (user as any)?.phone || '0000000000',
+        value_a: String(appointment._id),
+      };
+
+      // 6. Call SSLCommerz init
+      const response = await this.sslCommerzService.init(sslData);
+
+      if (response?.status === 'SUCCESS' && response?.GatewayPageURL) {
+        savedPayment.sessionKey = response.sessionkey;
+        await savedPayment.save();
+
+        return {
+          appointmentId: String(appointment._id),
+          tranId,
+          gatewayPageURL: response.GatewayPageURL,
+        };
+      }
+
+      // Init failed → rollback appointment + payment
+      throw new Error(
+        response?.failedreason || 'SSLCommerz init failed',
+      );
+    } catch (error) {
+      // Rollback: delete the appointment + cancel the payment
+      try {
+        await this.appointmentModel.findByIdAndDelete(appointment._id).exec();
+        await this.paymentModel
+          .updateOne(
+            { appointmentId: appointment._id },
+            { status: PaymentStatus.CANCELLED, errorReason: error.message },
+          )
+          .exec();
+      } catch {
+        // ignore rollback errors
+      }
+      throw new BadRequestException(
+        `Payment could not be initiated: ${error.message}`,
+      );
+    }
+  }
+
+  // ─── Get appointment ticket PDF (delegates to TicketService) ─────────────────
+  async getTicket(
+    appointmentId: string,
+    userId: string,
+    isStaff: boolean,
+  ): Promise<Buffer> {
+    return this.ticketService.getTicket(appointmentId, userId, isStaff);
   }
 
   async findMyTickets(

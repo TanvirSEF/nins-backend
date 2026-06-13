@@ -17,6 +17,6 @@ import { User, UserSchema } from '../user/user.schema';
   ],
   controllers: [PaymentController],
   providers: [PaymentService, SslCommerzService],
-  exports: [PaymentService],
+  exports: [PaymentService, SslCommerzService],
 })
 export class PaymentModule {}
