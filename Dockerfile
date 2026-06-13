@@ -33,6 +33,9 @@ FROM node:22-alpine AS production
 # Install pnpm (needed because we use pnpm as pkg manager)
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
+# Install mongodump + tar for database backups (runs as root, app runs as node)
+RUN apk add --no-cache mongodb-tools tar
+
 # Security: run as non-root user
 USER node
 

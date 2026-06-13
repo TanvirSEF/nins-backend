@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule as NestScheduleModule } from '@nestjs/schedule';
 import { APP_GUARD } from '@nestjs/core';
 // @ts-expect-error — no types available for cache-manager-ioredis
 import * as redisStore from 'cache-manager-ioredis';
@@ -25,6 +26,10 @@ import { UploadModule } from './modules/upload/upload.module';
 import { PathologyModule } from './modules/pathology/pathology.module';
 import { LeaveModule } from './modules/leave/leave.module';
 import { GalleryModule } from './modules/gallery/gallery.module';
+import { DoctorDashboardModule } from './modules/doctor-dashboard/doctor-dashboard.module';
+import { SearchModule } from './modules/search/search.module';
+import { ReportModule } from './modules/report/report.module';
+import { BackupModule } from './modules/backup/backup.module';
 import { ShutdownService } from './common/services/shutdown.service';
 import { JwtAuthGuard } from './common/guards';
 import { RolesGuard } from './common/guards';
@@ -58,6 +63,9 @@ import { RolesGuard } from './common/guards';
       },
     ]),
 
+    // Scheduled jobs (backup cron)
+    NestScheduleModule.forRoot(),
+
     // Feature modules
     AuthModule,
     UserModule,
@@ -76,6 +84,10 @@ import { RolesGuard } from './common/guards';
     PathologyModule,
     LeaveModule,
     GalleryModule,
+    DoctorDashboardModule,
+    SearchModule,
+    ReportModule,
+    BackupModule,
   ],
   // Global guards (execution order: throttle → jwt auth → roles)
   providers: [

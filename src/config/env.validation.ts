@@ -80,6 +80,15 @@ export class EnvironmentVariables {
   @IsOptional()
   @IsString()
   R2_PUBLIC_BASE_URL: string = '';
+
+  // Backup
+  @IsOptional()
+  @IsString()
+  BACKUP_RETENTION_DAYS: string = '30';
+
+  @IsOptional()
+  @IsString()
+  BACKUP_CRON: string = '0 2 * * *';
 }
 
 export function validate(config: Record<string, unknown>) {
