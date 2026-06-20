@@ -8,7 +8,6 @@ import {
   Body,
   Query,
   Res,
-  Header,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import {
@@ -73,12 +72,13 @@ export class AppointmentController {
   @ApiResponse({ status: 400, description: 'Appointment not confirmed or not paid' })
   @ApiResponse({ status: 403, description: 'Not your appointment' })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
-  @Header('Content-Type', 'application/pdf')
   async getTicket(
     @Param('id') id: string,
-    @Res({ passthrough: true }) res: Response,
+    // Plain @Res() (no passthrough) so we send raw PDF bytes directly and the
+    // global TransformInterceptor does NOT wrap the Buffer as JSON.
+    @Res() res: Response,
     @CurrentUser() user: UserDocument,
-  ): Promise<Buffer> {
+  ): Promise<void> {
     const isStaff =
       user.role === Role.SUPER_ADMIN || user.role === Role.HOSPITAL_STAFF;
     const buffer = await this.appointmentService.getTicket(
@@ -86,11 +86,12 @@ export class AppointmentController {
       String(user._id),
       isStaff,
     );
+    res.setHeader('Content-Type', 'application/pdf');
     res.setHeader(
       'Content-Disposition',
       `attachment; filename=ticket-${id}.pdf`,
     );
-    return buffer;
+    res.end(buffer);
   }
 
   @Get('my-tickets')
