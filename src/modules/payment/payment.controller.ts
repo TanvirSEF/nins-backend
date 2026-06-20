@@ -17,6 +17,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { PaymentService } from './payment.service';
 import { PaymentFilterDto } from './dto/payment-filter.dto';
 import { PaymentDocument, Payment } from './payment.schema';
@@ -28,7 +29,28 @@ import { Role, UserDocument } from '../user/user.schema';
 @ApiBearerAuth('JWT-auth')
 @Controller('payments')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(
+    private readonly paymentService: PaymentService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  /**
+   * Build the frontend return URL the browser is redirected to after the
+   * SSLCommerz hosted checkout. `result` = which callback was hit;
+   * the frontend re-fetches the appointment to show the authoritative status.
+   */
+  private paymentReturnUrl(
+    result: 'success' | 'fail' | 'cancel',
+    data: Record<string, any>,
+  ): string {
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+    const params = new URLSearchParams({
+      result,
+      appointmentId: String(data?.value_a ?? ''),
+      tranId: String(data?.tran_id ?? ''),
+    });
+    return `${frontendUrl}/dashboard/patient/book/return?${params.toString()}`;
+  }
 
   @Post('init/:appointmentId')
   @Roles(Role.PATIENT)
@@ -59,42 +81,55 @@ export class PaymentController {
 
   @All('callback/success')
   @Public()
-  @ApiOperation({ summary: 'SSLCommerz success redirect handler (public)' })
+  @ApiOperation({
+    summary: 'SSLCommerz success redirect handler (public) — 302 to frontend',
+  })
   @ApiQuery({ name: 'tran_id', description: 'Transaction ID', type: String })
-  @ApiResponse({ status: 200, description: 'Payment success info' })
+  @ApiResponse({ status: 302, description: 'Redirect to frontend return page' })
   async handleSuccess(
     @Query() query: Record<string, any>,
     @Body() body: Record<string, any>,
-  ): Promise<{ success: boolean; tranId?: string; message: string }> {
-    // SSLCommerz may send data via query (GET redirect) or body (POST)
+    @Res() res: Response,
+  ): Promise<void> {
+    // SSLCommerz may send data via query (GET redirect) or body (POST).
+    // Fire the in-the-moment handler; IPN remains the authoritative confirmer.
     const data = Object.keys(body || {}).length > 0 ? body : query;
-    return this.paymentService.handleSuccess(data);
+    this.paymentService.handleSuccess(data).catch(() => null);
+    res.redirect(302, this.paymentReturnUrl('success', data));
   }
 
   @All('callback/fail')
   @Public()
-  @ApiOperation({ summary: 'SSLCommerz fail redirect handler (public)' })
+  @ApiOperation({
+    summary: 'SSLCommerz fail redirect handler (public) — 302 to frontend',
+  })
   @ApiQuery({ name: 'tran_id', description: 'Transaction ID', type: String })
-  @ApiResponse({ status: 200, description: 'Payment failure info' })
+  @ApiResponse({ status: 302, description: 'Redirect to frontend return page' })
   async handleFail(
     @Query() query: Record<string, any>,
     @Body() body: Record<string, any>,
-  ): Promise<{ success: boolean; tranId?: string; message: string }> {
+    @Res() res: Response,
+  ): Promise<void> {
     const data = Object.keys(body || {}).length > 0 ? body : query;
-    return this.paymentService.handleFail(data);
+    this.paymentService.handleFail(data).catch(() => null);
+    res.redirect(302, this.paymentReturnUrl('fail', data));
   }
 
   @All('callback/cancel')
   @Public()
-  @ApiOperation({ summary: 'SSLCommerz cancel redirect handler (public)' })
+  @ApiOperation({
+    summary: 'SSLCommerz cancel redirect handler (public) — 302 to frontend',
+  })
   @ApiQuery({ name: 'tran_id', description: 'Transaction ID', type: String })
-  @ApiResponse({ status: 200, description: 'Payment cancelled info' })
+  @ApiResponse({ status: 302, description: 'Redirect to frontend return page' })
   async handleCancel(
     @Query() query: Record<string, any>,
     @Body() body: Record<string, any>,
-  ): Promise<{ success: boolean; tranId?: string; message: string }> {
+    @Res() res: Response,
+  ): Promise<void> {
     const data = Object.keys(body || {}).length > 0 ? body : query;
-    return this.paymentService.handleCancel(data);
+    this.paymentService.handleCancel(data).catch(() => null);
+    res.redirect(302, this.paymentReturnUrl('cancel', data));
   }
 
   @Get('history')

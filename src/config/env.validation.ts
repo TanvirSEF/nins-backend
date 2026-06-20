@@ -56,6 +56,11 @@ export class EnvironmentVariables {
   @IsString()
   BACKEND_URL: string;
 
+  // Frontend origin — payment callbacks redirect the browser here after SSLCommerz
+  @IsOptional()
+  @IsString()
+  FRONTEND_URL: string = 'http://localhost:3000';
+
   // Email (Resend)
   @IsString()
   RESEND_API_KEY: string;

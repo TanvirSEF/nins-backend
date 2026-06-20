@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
+import Redis from 'ioredis';
 import { AppointmentService } from './appointment.service';
 import { AppointmentController } from './appointment.controller';
 import { AppointmentCleanupCron } from './appointment-cleanup.cron';
@@ -16,6 +18,8 @@ import { Payment, PaymentSchema } from '../payment/payment.schema';
 import { Department, DepartmentSchema } from '../department/department.schema';
 import { PaymentModule } from '../payment/payment.module';
 
+export const REDIS_CLIENT = 'REDIS_CLIENT';
+
 @Module({
   imports: [
     PaymentModule,
@@ -30,7 +34,22 @@ import { PaymentModule } from '../payment/payment.module';
     ]),
   ],
   controllers: [AppointmentController],
-  providers: [AppointmentService, TicketService, AppointmentCleanupCron],
+  providers: [
+    // Dedicated Redis client for prefix-based cache invalidation (SCAN+UNLINK).
+    {
+      provide: REDIS_CLIENT,
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) =>
+        new Redis({
+          host: config.get<string>('REDIS_HOST') || 'localhost',
+          port: config.get<number>('REDIS_PORT') || 6379,
+          password: config.get<string>('REDIS_PASSWORD') || undefined,
+        }),
+    },
+    AppointmentService,
+    TicketService,
+    AppointmentCleanupCron,
+  ],
   exports: [AppointmentService],
 })
 export class AppointmentModule {}

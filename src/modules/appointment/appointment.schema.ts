@@ -72,3 +72,15 @@ export const AppointmentSchema = SchemaFactory.createForClass(Appointment);
 
 // Compound index for efficient day-based booking count queries
 AppointmentSchema.index({ doctorId: 1, appointmentDate: 1 });
+
+// Race-condition backstops (concurrent bookings) — enforced at the DB layer:
+// 1) No duplicate serial number per doctor+day.
+AppointmentSchema.index(
+  { doctorId: 1, appointmentDate: 1, serialNumber: 1 },
+  { unique: true },
+);
+// 2) No duplicate ACTIVE booking for the same patient+doctor+day (CANCELLED excluded).
+AppointmentSchema.index(
+  { patientId: 1, doctorId: 1, appointmentDate: 1 },
+  { unique: true, partialFilterExpression: { status: { $ne: 'CANCELLED' } } },
+);

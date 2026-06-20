@@ -10,6 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import Redis from 'ioredis';
 import {
   Appointment,
   AppointmentDocument,
@@ -65,6 +66,7 @@ export class AppointmentService {
     @InjectModel(Payment.name)
     private paymentModel: Model<PaymentDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @Inject('REDIS_CLIENT') private redis: Redis,
     private notificationService: NotificationService,
     private sslCommerzService: SslCommerzService,
     private ticketService: TicketService,
@@ -164,17 +166,56 @@ export class AppointmentService {
     }
 
     // ─── 7. Auto Serial Number ──────────────────────────────────────────────
-    const serialNumber = existingCount + 1;
+    // ─── 7+8. Create Appointment (race-safe) ─────────────────────────────────
+    // The count-based pre-check above is a fast path; the unique indexes on the
+    // schema are the authoritative backstop for concurrent bookings. On a serial
+    // collision (E11000) we recompute the count and retry; on a duplicate active
+    // booking we surface a Conflict.
+    let saved: AppointmentDocument | undefined;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const activeCount = await this.appointmentModel
+        .countDocuments({
+          doctorId: doctorObjectId,
+          appointmentDate: {
+            $gte: this.startOfDay(appointmentDate),
+            $lt: this.endOfDay(appointmentDate),
+          },
+          status: { $ne: AppointmentStatus.CANCELLED },
+        })
+        .exec();
 
-    // ─── 8. Create Appointment ──────────────────────────────────────────────
-    const appointment = new this.appointmentModel({
-      patientId: patientObjectId,
-      doctorId: doctorObjectId,
-      scheduleId: new Types.ObjectId(dto.scheduleId),
-      appointmentDate,
-      serialNumber,
-    });
-    const saved = await appointment.save();
+      if (activeCount >= schedule.maxPatients) {
+        throw new BadRequestException(
+          'All booking slots for this date are full',
+        );
+      }
+
+      const appointment = new this.appointmentModel({
+        patientId: patientObjectId,
+        doctorId: doctorObjectId,
+        scheduleId: new Types.ObjectId(dto.scheduleId),
+        appointmentDate,
+        serialNumber: activeCount + 1,
+      });
+
+      try {
+        saved = await appointment.save();
+        break;
+      } catch (error: any) {
+        if (error?.code !== 11000) throw error;
+        // Duplicate key — which unique index collided?
+        if (error?.keyValue?.serialNumber !== undefined) {
+          continue; // serial taken between our count and save → retry
+        }
+        throw new ConflictException(
+          'You already have an active appointment with this doctor on this date',
+        );
+      }
+    }
+
+    if (!saved) {
+      throw new BadRequestException('All booking slots for this date are full');
+    }
 
     // ─── 9. Cache Invalidation ──────────────────────────────────────────────
     await this.invalidateAppointmentCache(patientId, dto.doctorId);
@@ -478,24 +519,27 @@ export class AppointmentService {
     patientId: string,
     doctorId: string,
   ): Promise<void> {
-    const keysToDelete: Promise<any>[] = [];
-
-    // Invalidate patient ticket caches (all status/page combinations)
-    for (let p = 1; p <= 50; p++) {
-      for (const l of [10, 25, 50, 100]) {
-        keysToDelete.push(
-          this.cacheManager.del(
-            `appointments:patient:${patientId}:status:all:doc:all:page:${p}:limit:${l}`,
-          ),
-        );
+    // Bust EVERY cached variant for this patient (any status/doctor/page/limit)
+    // by scanning the Redis keyspace by prefix. The previous per-key loop only
+    // cleared the `status:all:doc:all` variant and left filtered pages stale.
+    const pattern = `appointments:patient:${patientId}:*`;
+    let cursor = '0';
+    do {
+      const [next, keys] = await this.redis.scan(
+        cursor,
+        'MATCH',
+        pattern,
+        'COUNT',
+        200,
+      );
+      cursor = next;
+      if (keys.length > 0) {
+        // UNLINK = non-blocking delete (Redis ≥ 4)
+        await this.redis.unlink(...keys);
       }
-    }
+    } while (cursor !== '0');
 
-    // Invalidate doctor schedule cache
-    keysToDelete.push(
-      this.cacheManager.del(`schedules:doctor:${doctorId}`),
-    );
-
-    await Promise.all(keysToDelete);
+    // Invalidate doctor schedule cache (used by the booking capacity preview)
+    await this.cacheManager.del(`schedules:doctor:${doctorId}`);
   }
 }
