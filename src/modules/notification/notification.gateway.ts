@@ -1,54 +1,26 @@
 import { Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   WebSocketGateway,
   WebSocketServer,
-  OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
-import { createAdapter } from '@socket.io/redis-adapter';
-import { Redis } from 'ioredis';
 
 @WebSocketGateway({
   namespace: 'notifications',
   cors: { origin: '*' },
 })
 export class NotificationGateway
-  implements
-    OnGatewayInit,
-    OnGatewayConnection,
-    OnGatewayDisconnect
+  implements OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer()
   server: Server;
 
   private readonly logger = new Logger(NotificationGateway.name);
 
-  constructor(
-    private jwtService: JwtService,
-    private configService: ConfigService,
-  ) {}
-
-  /**
-   * Attach the Redis adapter so emits fan out across ALL replicas. Without it,
-   * a notification triggered by an HTTP request on replica A never reaches a
-   * socket connected to replica B (the server runs 3 replicas). The same Redis
-   * the cache uses is shared by every replica.
-   */
-  async afterInit(server: Server) {
-    const host = this.configService.get<string>('REDIS_HOST') || 'localhost';
-    const port = Number(this.configService.get<string>('REDIS_PORT')) || 6379;
-    const password =
-      this.configService.get<string>('REDIS_PASSWORD') || undefined;
-
-    const pubClient = new Redis({ host, port, password });
-    const subClient = pubClient.duplicate();
-    server.adapter(createAdapter(pubClient, subClient));
-    this.logger.log('Socket.IO Redis adapter attached (multi-instance fan-out)');
-  }
+  constructor(private jwtService: JwtService) {}
 
   async handleConnection(client: Socket) {
     try {
