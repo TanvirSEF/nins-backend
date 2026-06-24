@@ -8,6 +8,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
+import { RedisIoAdapter } from './realtime/redis-io.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -94,6 +95,11 @@ async function bootstrap() {
 
   // ─── Graceful shutdown for Docker ───
   app.enableShutdownHooks();
+
+  // ─── Multi-instance Socket.IO ───
+  // Fan out realtime emits across all replicas via Redis pub/sub. Non-fatal:
+  // if Redis is unavailable the app still boots (single-instance sockets).
+  app.useWebSocketAdapter(new RedisIoAdapter(app));
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
