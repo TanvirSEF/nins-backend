@@ -124,7 +124,12 @@ export class PathologyReport {
     description: 'Structured result values',
     type: [ResultValue],
     example: [
-      { parameter: 'Hemoglobin', value: '13.5', referenceRange: '13.0-17.0', flag: 'NORMAL' },
+      {
+        parameter: 'Hemoglobin',
+        value: '13.5',
+        referenceRange: '13.0-17.0',
+        flag: 'NORMAL',
+      },
     ],
   })
   @Prop({ type: [ResultValueSchema], default: [] })

@@ -33,7 +33,11 @@ export class UserController {
   @Post()
   @Roles(Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Create a new user (SUPER_ADMIN only)' })
-  @ApiResponse({ status: 201, description: 'User created successfully', type: User })
+  @ApiResponse({
+    status: 201,
+    description: 'User created successfully',
+    type: User,
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   create(@Body() createUserDto: CreateUserDto): Promise<UserDocument> {

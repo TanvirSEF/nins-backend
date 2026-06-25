@@ -4,7 +4,10 @@ import { PaymentService } from './payment.service';
 import { PaymentController } from './payment.controller';
 import { Payment, PaymentSchema } from './payment.schema';
 import { SslCommerzService } from './sslcommerz.service';
-import { Appointment, AppointmentSchema } from '../appointment/appointment.schema';
+import {
+  Appointment,
+  AppointmentSchema,
+} from '../appointment/appointment.schema';
 import { User, UserSchema } from '../user/user.schema';
 
 @Module({

@@ -19,7 +19,9 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<{ user: UserDocument; token: string }> {
+  async register(
+    dto: RegisterDto,
+  ): Promise<{ user: UserDocument; token: string }> {
     const existing = await this.userModel.findOne({ email: dto.email }).exec();
     if (existing) {
       throw new ConflictException('Email already registered');
@@ -49,7 +51,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }

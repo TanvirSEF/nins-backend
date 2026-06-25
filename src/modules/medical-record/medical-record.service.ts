@@ -175,8 +175,7 @@ export class MedicalRecordService {
   // ─── Find One ─────────────────────────────────────────────────────────────────
   async findOne(id: string): Promise<MedicalRecordDocument> {
     const cacheKey = `medical-records:${id}`;
-    const cached =
-      await this.cacheManager.get<MedicalRecordDocument>(cacheKey);
+    const cached = await this.cacheManager.get<MedicalRecordDocument>(cacheKey);
     if (cached) return cached;
 
     const record = await this.medicalRecordModel
@@ -247,8 +246,7 @@ export class MedicalRecordService {
     appointmentId: string,
   ): Promise<MedicalRecordDocument> {
     const cacheKey = `medical-records:appointment:${appointmentId}`;
-    const cached =
-      await this.cacheManager.get<MedicalRecordDocument>(cacheKey);
+    const cached = await this.cacheManager.get<MedicalRecordDocument>(cacheKey);
     if (cached) return cached;
 
     const record = await this.medicalRecordModel
@@ -292,9 +290,7 @@ export class MedicalRecordService {
 
   // ─── Remove ───────────────────────────────────────────────────────────────────
   async remove(id: string): Promise<MedicalRecordDocument> {
-    const record = await this.medicalRecordModel
-      .findByIdAndDelete(id)
-      .exec();
+    const record = await this.medicalRecordModel.findByIdAndDelete(id).exec();
 
     if (!record) {
       throw new NotFoundException(`Medical record #${id} not found`);
@@ -319,9 +315,7 @@ export class MedicalRecordService {
 
     // Single record cache
     keysToDelete.push(this.cacheManager.del(`medical-records:${id}`));
-    keysToDelete.push(
-      this.cacheManager.del(`medical-records:appointment:*`),
-    );
+    keysToDelete.push(this.cacheManager.del(`medical-records:appointment:*`));
 
     // List caches (all filter/page combinations)
     for (let p = 1; p <= 50; p++) {
@@ -329,7 +323,11 @@ export class MedicalRecordService {
         // Global list caches
         for (const pat of ['all', patientId]) {
           for (const doc of ['all', doctorId]) {
-            for (const st of ['all', MedicalRecordStatus.ACTIVE, MedicalRecordStatus.ARCHIVED]) {
+            for (const st of [
+              'all',
+              MedicalRecordStatus.ACTIVE,
+              MedicalRecordStatus.ARCHIVED,
+            ]) {
               keysToDelete.push(
                 this.cacheManager.del(
                   `medical-records:patient:${pat}:doctor:${doc}:status:${st}:page:${p}:limit:${l}`,

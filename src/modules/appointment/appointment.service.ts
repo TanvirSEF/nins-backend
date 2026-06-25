@@ -21,18 +21,18 @@ import {
   DoctorProfileDocument,
 } from '../doctor/doctor-profile.schema';
 import { Schedule, ScheduleDocument } from '../schedule/schedule.schema';
-import {
-  Leave,
-  LeaveDocument,
-  LeaveStatus,
-} from '../leave/leave.schema';
+import { Leave, LeaveDocument, LeaveStatus } from '../leave/leave.schema';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { AppointmentFilterDto } from './dto/appointment-filter.dto';
 import { Role, UserDocument } from '../user/user.schema';
 import { NotificationService } from '../notification/notification.service';
 import { NotificationType } from '../notification/notification.schema';
-import { Payment, PaymentDocument, PaymentStatus } from '../payment/payment.schema';
+import {
+  Payment,
+  PaymentDocument,
+  PaymentStatus,
+} from '../payment/payment.schema';
 import { SslCommerzService } from '../payment/sslcommerz.service';
 import { TicketService } from './ticket.service';
 import { ConfigService } from '@nestjs/config';
@@ -100,17 +100,13 @@ export class AppointmentService {
 
     // ─── 3. Schedule Belongs to This Doctor ─────────────────────────────────
     if (!schedule.doctorId.equals(doctorObjectId)) {
-      throw new BadRequestException(
-        'Schedule does not belong to this doctor',
-      );
+      throw new BadRequestException('Schedule does not belong to this doctor');
     }
 
     // ─── 4. Day-of-Week Match ───────────────────────────────────────────────
     const requestedDay = appointmentDate.getDay();
     if (requestedDay !== schedule.dayOfWeek) {
-      throw new BadRequestException(
-        'Doctor is not available on this day',
-      );
+      throw new BadRequestException('Doctor is not available on this day');
     }
 
     // ─── 4b. Doctor Leave Check ────────────────────────────────────────────
@@ -160,9 +156,7 @@ export class AppointmentService {
       .exec();
 
     if (existingCount >= schedule.maxPatients) {
-      throw new BadRequestException(
-        'All booking slots for this date are full',
-      );
+      throw new BadRequestException('All booking slots for this date are full');
     }
 
     // ─── 7. Auto Serial Number ──────────────────────────────────────────────
@@ -238,7 +232,11 @@ export class AppointmentService {
   async bookWithPayment(
     dto: CreateAppointmentDto,
     userId: string,
-  ): Promise<{ appointmentId: string; tranId: string; gatewayPageURL: string }> {
+  ): Promise<{
+    appointmentId: string;
+    tranId: string;
+    gatewayPageURL: string;
+  }> {
     // 1. Run full booking validation + create PENDING appointment (reuse create)
     const appointment = await this.createAppointment(dto, userId);
 
@@ -304,9 +302,7 @@ export class AppointmentService {
       }
 
       // Init failed → rollback appointment + payment
-      throw new Error(
-        response?.failedreason || 'SSLCommerz init failed',
-      );
+      throw new Error(response?.failedreason || 'SSLCommerz init failed');
     } catch (error) {
       // Rollback: delete the appointment + cancel the payment
       try {
@@ -386,7 +382,12 @@ export class AppointmentService {
   async findByDoctor(
     doctorId: string,
     date?: string,
-  ): Promise<{ doctorId: string; date?: string; appointments: AppointmentDocument[]; totalBooked: number }> {
+  ): Promise<{
+    doctorId: string;
+    date?: string;
+    appointments: AppointmentDocument[];
+    totalBooked: number;
+  }> {
     const doctorObjectId = new Types.ObjectId(doctorId);
     const query: any = {
       doctorId: doctorObjectId,
@@ -445,7 +446,9 @@ export class AppointmentService {
     if (user.role === Role.PATIENT) {
       // Patients can only CANCEL their own appointments
       if (!appointment.patientId.equals(user._id)) {
-        throw new ForbiddenException('You can only cancel your own appointments');
+        throw new ForbiddenException(
+          'You can only cancel your own appointments',
+        );
       }
       if (dto.status !== AppointmentStatus.CANCELLED) {
         throw new ForbiddenException('Patients can only cancel appointments');

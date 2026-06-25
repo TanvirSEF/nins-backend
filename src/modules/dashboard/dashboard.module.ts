@@ -7,10 +7,7 @@ import {
   DoctorProfile,
   DoctorProfileSchema,
 } from '../doctor/doctor-profile.schema';
-import {
-  Department,
-  DepartmentSchema,
-} from '../department/department.schema';
+import { Department, DepartmentSchema } from '../department/department.schema';
 import {
   Appointment,
   AppointmentSchema,

@@ -23,7 +23,10 @@ export class ReportController {
   @ApiQuery({ name: 'startDate', required: true, type: String })
   @ApiQuery({ name: 'endDate', required: true, type: String })
   @ApiResponse({ status: 200, description: 'Excel file' })
-  @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
   async revenueExcel(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
@@ -71,7 +74,10 @@ export class ReportController {
   @ApiQuery({ name: 'startDate', required: false, type: String })
   @ApiQuery({ name: 'endDate', required: false, type: String })
   @ApiResponse({ status: 200, description: 'Excel file' })
-  @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
   async patientsExcel(
     @Query('startDate') startDate: string | undefined,
     @Query('endDate') endDate: string | undefined,

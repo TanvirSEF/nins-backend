@@ -56,10 +56,7 @@ export class LeaveService {
   ) {}
 
   // ─── Doctor requests leave ───────────────────────────────────────────────────
-  async create(
-    dto: CreateLeaveDto,
-    userId: string,
-  ): Promise<LeaveDocument> {
+  async create(dto: CreateLeaveDto, userId: string): Promise<LeaveDocument> {
     // Resolve doctor profile
     const doctorProfile = await this.doctorModel
       .findOne({ userId: new Types.ObjectId(userId) })
@@ -173,10 +170,14 @@ export class LeaveService {
       throw new NotFoundException(`Leave #${id} not found`);
     }
     if (!leave.doctorUserId.equals(new Types.ObjectId(userId))) {
-      throw new ForbiddenException('You can only update your own leave requests');
+      throw new ForbiddenException(
+        'You can only update your own leave requests',
+      );
     }
     if (leave.status !== LeaveStatus.PENDING) {
-      throw new BadRequestException('Only pending leave requests can be updated');
+      throw new BadRequestException(
+        'Only pending leave requests can be updated',
+      );
     }
 
     if (dto.startDate) leave.startDate = new Date(dto.startDate);
@@ -207,11 +208,10 @@ export class LeaveService {
     if (!leave) {
       throw new NotFoundException(`Leave #${id} not found`);
     }
-    if (
-      !isAdmin &&
-      !leave.doctorUserId.equals(new Types.ObjectId(userId))
-    ) {
-      throw new ForbiddenException('You can only cancel your own leave requests');
+    if (!isAdmin && !leave.doctorUserId.equals(new Types.ObjectId(userId))) {
+      throw new ForbiddenException(
+        'You can only cancel your own leave requests',
+      );
     }
 
     // If PENDING, hard-delete; otherwise mark CANCELLED (keeps audit trail)
@@ -280,7 +280,9 @@ export class LeaveService {
   }
 
   // ─── Cancel appointments that fall within the leave range ────────────────────
-  private async cancelConflictingAppointments(leave: LeaveDocument): Promise<void> {
+  private async cancelConflictingAppointments(
+    leave: LeaveDocument,
+  ): Promise<void> {
     const startOfDay = new Date(leave.startDate);
     startOfDay.setUTCHours(0, 0, 0, 0);
     const endOfDay = new Date(leave.endDate);
@@ -290,7 +292,9 @@ export class LeaveService {
       .find({
         doctorId: leave.doctorId,
         appointmentDate: { $gte: startOfDay, $lte: endOfDay },
-        status: { $in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED] },
+        status: {
+          $in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED],
+        },
       })
       .exec();
 
@@ -305,11 +309,15 @@ export class LeaveService {
         appt.status = AppointmentStatus.CANCELLED;
         await appt.save();
         await this.notificationService
-          .notify(String(appt.patientId), NotificationType.APPOINTMENT_CANCELLED, {
-            appointmentDate: appt.appointmentDate,
-            serialNumber: appt.serialNumber,
-            reason: 'Doctor is on leave on the selected date',
-          })
+          .notify(
+            String(appt.patientId),
+            NotificationType.APPOINTMENT_CANCELLED,
+            {
+              appointmentDate: appt.appointmentDate,
+              serialNumber: appt.serialNumber,
+              reason: 'Doctor is on leave on the selected date',
+            },
+          )
           .catch(() => null);
       })(),
     );

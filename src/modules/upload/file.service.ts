@@ -81,7 +81,10 @@ export class FileService {
     this.s3 = new S3Client({
       region: 'auto',
       endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
-      credentials: { accessKeyId: accessKeyId!, secretAccessKey: secretAccessKey! },
+      credentials: {
+        accessKeyId: accessKeyId!,
+        secretAccessKey: secretAccessKey!,
+      },
       // R2 does not support the AWS SDK v3 default checksum middleware — disable it
       requestChecksumCalculation: 'WHEN_REQUIRED',
       responseChecksumValidation: 'WHEN_REQUIRED',
@@ -135,11 +138,9 @@ export class FileService {
         Key: r2Key,
         ContentType: dto.mimeType,
       });
-      const presignedUrl = await getSignedUrl(
-        this.s3,
-        command,
-        { expiresIn: PRESIGN_EXPIRY_SECONDS },
-      );
+      const presignedUrl = await getSignedUrl(this.s3, command, {
+        expiresIn: PRESIGN_EXPIRY_SECONDS,
+      });
 
       return {
         fileId: String(saved._id),
@@ -190,7 +191,10 @@ export class FileService {
     file.publicUrl = await this.resolveReadUrl(file.r2Key);
     const updated = await file.save();
 
-    await this.invalidateFileCache(String(updated._id), String(updated.ownerId));
+    await this.invalidateFileCache(
+      String(updated._id),
+      String(updated.ownerId),
+    );
     return updated;
   }
 
@@ -266,7 +270,9 @@ export class FileService {
         new DeleteObjectCommand({ Bucket: this.bucket, Key: file.r2Key }),
       );
     } catch (error) {
-      this.logger.warn(`Failed to delete R2 object ${file.r2Key}: ${error.message}`);
+      this.logger.warn(
+        `Failed to delete R2 object ${file.r2Key}: ${error.message}`,
+      );
     }
 
     await this.fileModel.findByIdAndDelete(fileId).exec();
@@ -301,7 +307,9 @@ export class FileService {
   ): Promise<PaginatedResult<StoredFileDocument>> {
     const { page, limit } = filters;
     const cached =
-      await this.cacheManager.get<PaginatedResult<StoredFileDocument>>(cacheKey);
+      await this.cacheManager.get<PaginatedResult<StoredFileDocument>>(
+        cacheKey,
+      );
     if (cached) return cached;
 
     const [files, total] = await Promise.all([

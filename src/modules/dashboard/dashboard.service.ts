@@ -17,7 +17,11 @@ import {
   AppointmentDocument,
   AppointmentStatus,
 } from '../appointment/appointment.schema';
-import { Bed, BedDocument, BedType } from '../bed-management/schemas/bed.schema';
+import {
+  Bed,
+  BedDocument,
+  BedType,
+} from '../bed-management/schemas/bed.schema';
 import {
   DashboardStatsResponse,
   OverviewStats,
@@ -253,7 +257,11 @@ export class DashboardService {
       raw: { total: number; occupied: number }[],
     ): BedTypeStats => {
       const s = raw[0] || { total: 0, occupied: 0 };
-      return { total: s.total, occupied: s.occupied, available: s.total - s.occupied };
+      return {
+        total: s.total,
+        occupied: s.occupied,
+        available: s.total - s.occupied,
+      };
     };
 
     const bedStatus = {

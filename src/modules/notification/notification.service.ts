@@ -107,9 +107,7 @@ export class NotificationService {
 
       return saved;
     } catch (error) {
-      this.logger.error(
-        `Failed to notify user ${userId}: ${error.message}`,
-      );
+      this.logger.error(`Failed to notify user ${userId}: ${error.message}`);
       return null;
     }
   }
@@ -119,8 +117,7 @@ export class NotificationService {
     type: NotificationType,
     data: Record<string, any>,
   ): { title: string; message: string } {
-    const doctorName =
-      data.doctorName || data.doctor?.name || 'your doctor';
+    const doctorName = data.doctorName || data.doctor?.name || 'your doctor';
     const designation = data.designation || data.doctor?.designation || '';
     const dateStr = data.appointmentDate || data.appointment?.appointmentDate;
     const dateDisplay = dateStr
@@ -204,14 +201,11 @@ export class NotificationService {
     data: Record<string, any>,
   ): Promise<boolean> {
     const emailData = {
-      doctorName:
-        data.doctorName || data.doctor?.name || 'your doctor',
-      designation:
-        data.designation || data.doctor?.designation || '',
+      doctorName: data.doctorName || data.doctor?.name || 'your doctor',
+      designation: data.designation || data.doctor?.designation || '',
       appointmentDate:
         data.appointmentDate || data.appointment?.appointmentDate,
-      serialNumber:
-        data.serialNumber || data.appointment?.serialNumber,
+      serialNumber: data.serialNumber || data.appointment?.serialNumber,
       amount: data.amount,
       tranId: data.tranId,
       reason: data.reason,
@@ -301,16 +295,15 @@ export class NotificationService {
   }
 
   // ─── Mark single as read ────────────────────────────────────────────────────
-  async markAsRead(
-    id: string,
-    userId: string,
-  ): Promise<NotificationDocument> {
+  async markAsRead(id: string, userId: string): Promise<NotificationDocument> {
     const notification = await this.notificationModel.findById(id).exec();
     if (!notification) {
       throw new NotFoundException(`Notification #${id} not found`);
     }
     if (!notification.userId.equals(new Types.ObjectId(userId))) {
-      throw new ForbiddenException('You can only manage your own notifications');
+      throw new ForbiddenException(
+        'You can only manage your own notifications',
+      );
     }
 
     notification.read = true;
@@ -338,7 +331,9 @@ export class NotificationService {
       throw new NotFoundException(`Notification #${id} not found`);
     }
     if (!notification.userId.equals(new Types.ObjectId(userId))) {
-      throw new ForbiddenException('You can only delete your own notifications');
+      throw new ForbiddenException(
+        'You can only delete your own notifications',
+      );
     }
     await this.notificationModel.findByIdAndDelete(id).exec();
     await this.invalidateUnreadCache(userId);

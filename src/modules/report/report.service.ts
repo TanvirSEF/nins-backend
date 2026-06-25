@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Payment, PaymentDocument, PaymentStatus } from '../payment/payment.schema';
+import {
+  Payment,
+  PaymentDocument,
+  PaymentStatus,
+} from '../payment/payment.schema';
 import {
   Appointment,
   AppointmentDocument,
@@ -177,9 +181,7 @@ export class ReportService {
             name: p.name,
             email: p.email,
             phone: p.phone || '-',
-            registered: p.createdAt
-              ? p.createdAt.toLocaleString()
-              : '-',
+            registered: p.createdAt ? p.createdAt.toLocaleString() : '-',
           })),
           summary: [
             { label: 'Total Patients', value: totalPatients },
@@ -204,9 +206,7 @@ export class ReportService {
         p.name.substring(0, 25),
         (p.email || '').substring(0, 28),
         p.phone || '-',
-        p.createdAt
-          ? p.createdAt.toLocaleDateString('en-GB')
-          : '-',
+        p.createdAt ? p.createdAt.toLocaleDateString('en-GB') : '-',
       ]),
     });
   }

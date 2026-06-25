@@ -95,7 +95,7 @@ export class CreatePrescriptionDto {
   tests?: TestDto[];
 
   @ApiPropertyOptional({
-    description: 'Doctor\'s advice',
+    description: "Doctor's advice",
     example: ['Bed rest for 3 days'],
     type: [String],
   })

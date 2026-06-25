@@ -1,6 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { ApiHideProperty, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiHideProperty,
+  ApiProperty,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
 
 export enum Role {
   SUPER_ADMIN = 'SUPER_ADMIN',
@@ -55,3 +59,18 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+/**
+ * Defense in depth: never serialize the password hash. `select: false` already
+ * excludes it from ordinary query results, but `auth.service` login/register
+ * intentionally load it (`+passwordHash`) to verify or store the credential.
+ * This toJSON transform guarantees the hash never reaches an HTTP response,
+ * regardless of which code path populated it.
+ */
+UserSchema.set('toJSON', {
+  versionKey: false,
+  transform: (_doc, ret) => {
+    delete (ret as unknown as Record<string, unknown>).passwordHash;
+    return ret;
+  },
+});

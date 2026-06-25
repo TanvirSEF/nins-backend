@@ -7,7 +7,10 @@ import {
   DoctorProfile,
   DoctorProfileSchema,
 } from '../doctor/doctor-profile.schema';
-import { Appointment, AppointmentSchema } from '../appointment/appointment.schema';
+import {
+  Appointment,
+  AppointmentSchema,
+} from '../appointment/appointment.schema';
 
 @Module({
   imports: [

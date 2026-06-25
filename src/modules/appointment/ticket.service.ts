@@ -23,7 +23,10 @@ import {
   DoctorProfile,
   DoctorProfileDocument,
 } from '../doctor/doctor-profile.schema';
-import { Department, DepartmentDocument } from '../department/department.schema';
+import {
+  Department,
+  DepartmentDocument,
+} from '../department/department.schema';
 
 @Injectable()
 export class TicketService {
@@ -71,9 +74,7 @@ export class TicketService {
     }
 
     // 3. Resolve doctor + department
-    const doctor = await this.doctorModel
-      .findById(appointment.doctorId)
-      .exec();
+    const doctor = await this.doctorModel.findById(appointment.doctorId).exec();
     const department = doctor
       ? await this.deptModel.findById(doctor.departmentId).select('name').exec()
       : null;
@@ -123,7 +124,9 @@ export class TicketService {
 
     if (
       !isStaff &&
-      !appointment.patientId.equals(new (require('mongoose').Types.ObjectId)(userId))
+      !appointment.patientId.equals(
+        new (require('mongoose').Types.ObjectId)(userId),
+      )
     ) {
       throw new ForbiddenException(
         'You can only download tickets for your own appointments',
@@ -142,8 +145,14 @@ export class TicketService {
     departmentName: string;
     qrBuffer: Buffer;
   }): Promise<Buffer> {
-    const { appointment, payment, patient, doctorName, departmentName, qrBuffer } =
-      data;
+    const {
+      appointment,
+      payment,
+      patient,
+      doctorName,
+      departmentName,
+      qrBuffer,
+    } = data;
 
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument({ margin: 50, size: 'A4' });
@@ -249,9 +258,7 @@ export class TicketService {
       doc.moveDown(8);
 
       // ─── Footer ─────────────────────────────────────────────────────────────
-      doc
-        .rect(50, doc.y, pageWidth, 45)
-        .fill('#fef3c7');
+      doc.rect(50, doc.y, pageWidth, 45).fill('#fef3c7');
       doc
         .fillColor('#92400e')
         .fontSize(9)
@@ -262,10 +269,15 @@ export class TicketService {
         });
       doc
         .font('Helvetica')
-        .text('Arrive at least 15 minutes before your scheduled time.', 50, doc.y + 4, {
-          align: 'center',
-          width: pageWidth,
-        });
+        .text(
+          'Arrive at least 15 minutes before your scheduled time.',
+          50,
+          doc.y + 4,
+          {
+            align: 'center',
+            width: pageWidth,
+          },
+        );
 
       // ─── Generated timestamp ─────────────────────────────────────────────────
       doc

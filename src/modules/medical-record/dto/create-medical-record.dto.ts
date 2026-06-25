@@ -74,7 +74,7 @@ export class CreateMedicalRecordDto {
   appointmentId: string;
 
   @ApiProperty({
-    description: 'Patient\'s chief complaint',
+    description: "Patient's chief complaint",
     example: 'Severe headache for 3 days',
   })
   @IsString()

@@ -55,11 +55,16 @@ export class DepartmentService {
     return saved;
   }
 
-  async findAll(pagination: PaginationDto): Promise<PaginatedResult<DepartmentDocument>> {
+  async findAll(
+    pagination: PaginationDto,
+  ): Promise<PaginatedResult<DepartmentDocument>> {
     const { page, limit } = pagination;
     const cacheKey = `departments:page:${page}:limit:${limit}`;
 
-    const cached = await this.cacheManager.get<PaginatedResult<DepartmentDocument>>(cacheKey);
+    const cached =
+      await this.cacheManager.get<PaginatedResult<DepartmentDocument>>(
+        cacheKey,
+      );
     if (cached) return cached;
 
     const [departments, total] = await Promise.all([
@@ -103,7 +108,10 @@ export class DepartmentService {
     return dept;
   }
 
-  async update(id: string, dto: UpdateDepartmentDto): Promise<DepartmentDocument> {
+  async update(
+    id: string,
+    dto: UpdateDepartmentDto,
+  ): Promise<DepartmentDocument> {
     const dept = await this.deptModel
       .findByIdAndUpdate(id, dto, { new: true, runValidators: true })
       .exec();
@@ -134,7 +142,9 @@ export class DepartmentService {
     const keysToDelete: Promise<any>[] = [];
     for (let p = 1; p <= 50; p++) {
       for (const l of [10, 25, 50, 100]) {
-        keysToDelete.push(this.cacheManager.del(`departments:page:${p}:limit:${l}`));
+        keysToDelete.push(
+          this.cacheManager.del(`departments:page:${p}:limit:${l}`),
+        );
       }
     }
     await Promise.all(keysToDelete);

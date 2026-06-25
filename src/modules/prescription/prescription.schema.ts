@@ -120,7 +120,7 @@ export class Prescription {
   tests: PrescriptionTest[];
 
   @ApiProperty({
-    description: 'Doctor\'s advice',
+    description: "Doctor's advice",
     example: ['Bed rest for 3 days', 'Drink plenty of water'],
     type: [String],
   })

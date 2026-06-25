@@ -32,14 +32,16 @@ import { Role, UserDocument } from '../user/user.schema';
 @ApiBearerAuth('JWT-auth')
 @Controller('pathology-reports')
 export class PathologyReportController {
-  constructor(
-    private readonly pathologyService: PathologyReportService,
-  ) {}
+  constructor(private readonly pathologyService: PathologyReportService) {}
 
   @Post()
   @Roles(Role.DOCTOR, Role.HOSPITAL_STAFF)
   @ApiOperation({ summary: 'Order a pathology test (DOCTOR/STAFF)' })
-  @ApiResponse({ status: 201, description: 'Test ordered', type: PathologyReport })
+  @ApiResponse({
+    status: 201,
+    description: 'Test ordered',
+    type: PathologyReport,
+  })
   @ApiResponse({ status: 404, description: 'Patient not found' })
   create(
     @Body() dto: CreatePathologyDto,
@@ -81,7 +83,11 @@ export class PathologyReportController {
   @Get(':id')
   @ApiOperation({ summary: 'Get a pathology report by ID' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Report found', type: PathologyReport })
+  @ApiResponse({
+    status: 200,
+    description: 'Report found',
+    type: PathologyReport,
+  })
   @ApiResponse({ status: 404, description: 'Report not found' })
   findOne(@Param('id') id: string): Promise<PathologyReportDocument> {
     return this.pathologyService.findOne(id);
@@ -91,7 +97,11 @@ export class PathologyReportController {
   @Roles(Role.HOSPITAL_STAFF, Role.DOCTOR)
   @ApiOperation({ summary: 'Add/upload pathology result (STAFF)' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Result added', type: PathologyReport })
+  @ApiResponse({
+    status: 200,
+    description: 'Result added',
+    type: PathologyReport,
+  })
   @ApiResponse({ status: 400, description: 'Result file not confirmed' })
   @ApiResponse({ status: 404, description: 'Report not found' })
   addResult(
@@ -105,7 +115,11 @@ export class PathologyReportController {
   @Roles(Role.DOCTOR, Role.HOSPITAL_STAFF)
   @ApiOperation({ summary: 'Update a pathology test order' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Order updated', type: PathologyReport })
+  @ApiResponse({
+    status: 200,
+    description: 'Order updated',
+    type: PathologyReport,
+  })
   update(
     @Param('id') id: string,
     @Body() dto: UpdatePathologyDto,
@@ -117,7 +131,11 @@ export class PathologyReportController {
   @Roles(Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete a pathology report (SUPER_ADMIN)' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Report deleted', type: PathologyReport })
+  @ApiResponse({
+    status: 200,
+    description: 'Report deleted',
+    type: PathologyReport,
+  })
   remove(@Param('id') id: string): Promise<PathologyReportDocument> {
     return this.pathologyService.remove(id);
   }

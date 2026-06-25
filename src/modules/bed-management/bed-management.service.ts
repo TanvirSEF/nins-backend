@@ -142,9 +142,7 @@ export class BedManagementService {
   }
 
   // ─── Private: Aggregation helper ──────────────────────────────────────────
-  private async getAggregatedStats(
-    bedType: BedType,
-  ): Promise<BedAvailability> {
+  private async getAggregatedStats(bedType: BedType): Promise<BedAvailability> {
     const [total, occupied, wards] = await Promise.all([
       this.bedModel.countDocuments({ type: bedType }).exec(),
       this.bedModel.countDocuments({ type: bedType, isOccupied: true }).exec(),

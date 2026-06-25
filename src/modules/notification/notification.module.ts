@@ -6,10 +6,7 @@ import { NotificationService } from './notification.service';
 import { NotificationController } from './notification.controller';
 import { MailService } from './mail.service';
 import { NotificationGateway } from './notification.gateway';
-import {
-  Notification,
-  NotificationSchema,
-} from './notification.schema';
+import { Notification, NotificationSchema } from './notification.schema';
 import { User, UserSchema } from '../user/user.schema';
 
 @Global()

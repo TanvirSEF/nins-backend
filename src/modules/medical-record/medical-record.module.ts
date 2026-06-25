@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MedicalRecordService } from './medical-record.service';
 import { MedicalRecordController } from './medical-record.controller';
+import { MedicalRecord, MedicalRecordSchema } from './medical-record.schema';
 import {
-  MedicalRecord,
-  MedicalRecordSchema,
-} from './medical-record.schema';
-import { Appointment, AppointmentSchema } from '../appointment/appointment.schema';
+  Appointment,
+  AppointmentSchema,
+} from '../appointment/appointment.schema';
 import {
   DoctorProfile,
   DoctorProfileSchema,

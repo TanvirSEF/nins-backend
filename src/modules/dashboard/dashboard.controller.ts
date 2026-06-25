@@ -24,7 +24,11 @@ export class DashboardController {
   @Get('stats')
   @Roles(Role.SUPER_ADMIN, Role.HOSPITAL_STAFF)
   @ApiOperation({ summary: 'Get full dashboard statistics' })
-  @ApiResponse({ status: 200, description: 'Full dashboard stats', type: DashboardStatsResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Full dashboard stats',
+    type: DashboardStatsResponse,
+  })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   getFullStats(): Promise<DashboardStatsResponse> {
     return this.dashboardService.getFullStats();
@@ -33,7 +37,11 @@ export class DashboardController {
   @Get('stats/overview')
   @Roles(Role.SUPER_ADMIN, Role.HOSPITAL_STAFF)
   @ApiOperation({ summary: 'Get overview statistics only' })
-  @ApiResponse({ status: 200, description: 'Overview stats', type: OverviewStats })
+  @ApiResponse({
+    status: 200,
+    description: 'Overview stats',
+    type: OverviewStats,
+  })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   getOverview(): Promise<OverviewStats> {
     return this.dashboardService.getOverview();
@@ -42,7 +50,11 @@ export class DashboardController {
   @Get('stats/appointments-trend')
   @Roles(Role.SUPER_ADMIN, Role.HOSPITAL_STAFF)
   @ApiOperation({ summary: 'Get 7-day appointment trend' })
-  @ApiResponse({ status: 200, description: 'Appointment trends', type: [AppointmentTrendDay] })
+  @ApiResponse({
+    status: 200,
+    description: 'Appointment trends',
+    type: [AppointmentTrendDay],
+  })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   getAppointmentTrend(): Promise<AppointmentTrendDay[]> {
     return this.dashboardService.getAppointmentTrend();

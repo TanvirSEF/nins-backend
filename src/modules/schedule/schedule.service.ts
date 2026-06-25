@@ -99,10 +99,7 @@ export class ScheduleService {
     return schedule;
   }
 
-  async update(
-    id: string,
-    dto: UpdateScheduleDto,
-  ): Promise<ScheduleDocument> {
+  async update(id: string, dto: UpdateScheduleDto): Promise<ScheduleDocument> {
     // If dayOfWeek or doctorId changes, check for duplicate
     if (dto.dayOfWeek !== undefined || dto.doctorId) {
       const current = await this.scheduleModel.findById(id).exec();
@@ -138,8 +135,7 @@ export class ScheduleService {
     }
 
     const updateData: any = { ...dto };
-    if (dto.doctorId)
-      updateData.doctorId = new Types.ObjectId(dto.doctorId);
+    if (dto.doctorId) updateData.doctorId = new Types.ObjectId(dto.doctorId);
 
     const schedule = await this.scheduleModel
       .findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
@@ -184,13 +180,17 @@ export class ScheduleService {
 
       const notifications = affectedAppointments.map((appt: any) =>
         this.notificationService
-          .notify(String(appt.patientId._id), NotificationType.SCHEDULE_CHANGED, {
-            doctorName,
-            designation,
-            reason: `Doctor's schedule has been ${reason}.`,
-            appointmentDate: appt.appointmentDate,
-            serialNumber: appt.serialNumber,
-          })
+          .notify(
+            String(appt.patientId._id),
+            NotificationType.SCHEDULE_CHANGED,
+            {
+              doctorName,
+              designation,
+              reason: `Doctor's schedule has been ${reason}.`,
+              appointmentDate: appt.appointmentDate,
+              serialNumber: appt.serialNumber,
+            },
+          )
           .catch(() => null),
       );
       await Promise.all(notifications);

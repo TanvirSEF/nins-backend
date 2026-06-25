@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import {
@@ -35,7 +31,10 @@ export class ImageService {
     this.s3 = new S3Client({
       region: 'auto',
       endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
-      credentials: { accessKeyId: accessKeyId!, secretAccessKey: secretAccessKey! },
+      credentials: {
+        accessKeyId: accessKeyId!,
+        secretAccessKey: secretAccessKey!,
+      },
       requestChecksumCalculation: 'WHEN_REQUIRED',
       responseChecksumValidation: 'WHEN_REQUIRED',
     });
@@ -85,9 +84,7 @@ export class ImageService {
       );
     } catch (error) {
       this.logger.error(`R2 image upload failed: ${error.message}`);
-      throw new BadRequestException(
-        `Failed to upload image: ${error.message}`,
-      );
+      throw new BadRequestException(`Failed to upload image: ${error.message}`);
     }
 
     // 6. Build public URL

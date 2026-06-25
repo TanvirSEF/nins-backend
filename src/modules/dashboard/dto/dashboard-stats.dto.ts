@@ -26,13 +26,13 @@ export class OverviewStats {
   @ApiProperty({ description: 'Total appointments (all time)', example: 5200 })
   totalAppointments: number;
 
-  @ApiProperty({ description: 'Today\'s appointments', example: 32 })
+  @ApiProperty({ description: "Today's appointments", example: 32 })
   todayAppointments: number;
 
-  @ApiProperty({ description: 'Today\'s completed appointments', example: 18 })
+  @ApiProperty({ description: "Today's completed appointments", example: 18 })
   todayCompleted: number;
 
-  @ApiProperty({ description: 'Today\'s cancelled appointments', example: 3 })
+  @ApiProperty({ description: "Today's cancelled appointments", example: 3 })
   todayCancelled: number;
 }
 
@@ -56,7 +56,10 @@ export class AppointmentTrendDay {
 
 // ─── Top Department ──────────────────────────────────────────────────────────────
 export class TopDepartment {
-  @ApiProperty({ description: 'Department ID', example: '507f1f77bcf86cd799439011' })
+  @ApiProperty({
+    description: 'Department ID',
+    example: '507f1f77bcf86cd799439011',
+  })
   departmentId: string;
 
   @ApiProperty({ description: 'Department name', example: 'Neurology' })

@@ -55,9 +55,19 @@ export class PaymentController {
   @Post('init/:appointmentId')
   @Roles(Role.PATIENT)
   @ApiOperation({ summary: 'Initiate payment for an appointment (PATIENT)' })
-  @ApiParam({ name: 'appointmentId', description: 'Appointment ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Returns GatewayPageURL for payment' })
-  @ApiResponse({ status: 400, description: 'Appointment not pending or gateway error' })
+  @ApiParam({
+    name: 'appointmentId',
+    description: 'Appointment ObjectId',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns GatewayPageURL for payment',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Appointment not pending or gateway error',
+  })
   @ApiResponse({ status: 403, description: 'Not your appointment' })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
   @ApiResponse({ status: 409, description: 'Already paid' })
@@ -74,7 +84,9 @@ export class PaymentController {
     summary: 'SSLCommerz IPN listener (public, server-to-server)',
   })
   @ApiResponse({ status: 200, description: 'IPN processed' })
-  async handleIPN(@Body() body: Record<string, any>): Promise<{ status: string }> {
+  async handleIPN(
+    @Body() body: Record<string, any>,
+  ): Promise<{ status: string }> {
     await this.paymentService.handleIPN(body);
     return { status: 'OK' };
   }

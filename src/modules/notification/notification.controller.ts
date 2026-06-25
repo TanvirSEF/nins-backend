@@ -50,7 +50,11 @@ export class NotificationController {
   @Patch(':id/read')
   @ApiOperation({ summary: 'Mark a single notification as read' })
   @ApiParam({ name: 'id', description: 'Notification ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Marked as read', type: Notification })
+  @ApiResponse({
+    status: 200,
+    description: 'Marked as read',
+    type: Notification,
+  })
   @ApiResponse({ status: 403, description: 'Not your notification' })
   @ApiResponse({ status: 404, description: 'Notification not found' })
   markAsRead(
@@ -63,7 +67,11 @@ export class NotificationController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a notification' })
   @ApiParam({ name: 'id', description: 'Notification ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Notification deleted', type: Notification })
+  @ApiResponse({
+    status: 200,
+    description: 'Notification deleted',
+    type: Notification,
+  })
   @ApiResponse({ status: 403, description: 'Not your notification' })
   @ApiResponse({ status: 404, description: 'Notification not found' })
   remove(

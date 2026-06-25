@@ -37,7 +37,11 @@ export class DepartmentController {
   @Post()
   @Roles(Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Create a new department (SUPER_ADMIN only)' })
-  @ApiResponse({ status: 201, description: 'Department created', type: Department })
+  @ApiResponse({
+    status: 201,
+    description: 'Department created',
+    type: Department,
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   create(@Body() dto: CreateDepartmentDto): Promise<DepartmentDocument> {
@@ -57,7 +61,11 @@ export class DepartmentController {
   @Public()
   @ApiOperation({ summary: 'Get a department by ID' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Department found', type: Department })
+  @ApiResponse({
+    status: 200,
+    description: 'Department found',
+    type: Department,
+  })
   @ApiResponse({ status: 404, description: 'Department not found' })
   findOne(@Param('id') id: string): Promise<DepartmentDocument> {
     return this.departmentService.findOne(id);
@@ -83,7 +91,11 @@ export class DepartmentController {
   @Roles(Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Update a department (SUPER_ADMIN only)' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Department updated', type: Department })
+  @ApiResponse({
+    status: 200,
+    description: 'Department updated',
+    type: Department,
+  })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Department not found' })
   update(
@@ -97,7 +109,11 @@ export class DepartmentController {
   @Roles(Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete a department (SUPER_ADMIN only)' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Department deleted', type: Department })
+  @ApiResponse({
+    status: 200,
+    description: 'Department deleted',
+    type: Department,
+  })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Department not found' })
   remove(@Param('id') id: string): Promise<DepartmentDocument> {

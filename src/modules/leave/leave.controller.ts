@@ -35,7 +35,10 @@ export class LeaveController {
   @Roles(Role.DOCTOR)
   @ApiOperation({ summary: 'Request leave (DOCTOR)' })
   @ApiResponse({ status: 201, description: 'Leave requested', type: Leave })
-  @ApiResponse({ status: 400, description: 'Invalid dates or overlapping leave' })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid dates or overlapping leave',
+  })
   @ApiResponse({ status: 403, description: 'Doctor profile not found' })
   create(
     @Body() dto: CreateLeaveDto,
@@ -77,7 +80,10 @@ export class LeaveController {
   @ApiOperation({ summary: 'Approve or reject a leave request (ADMIN)' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
   @ApiResponse({ status: 200, description: 'Leave reviewed', type: Leave })
-  @ApiResponse({ status: 400, description: 'Already reviewed or missing reason' })
+  @ApiResponse({
+    status: 400,
+    description: 'Already reviewed or missing reason',
+  })
   review(
     @Param('id') id: string,
     @Body() dto: ReviewLeaveDto,
@@ -102,7 +108,11 @@ export class LeaveController {
   @Delete(':id')
   @ApiOperation({ summary: 'Cancel/delete a leave request (owner or ADMIN)' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Leave cancelled/deleted', type: Leave })
+  @ApiResponse({
+    status: 200,
+    description: 'Leave cancelled/deleted',
+    type: Leave,
+  })
   @ApiResponse({ status: 403, description: 'Not your leave request' })
   remove(
     @Param('id') id: string,

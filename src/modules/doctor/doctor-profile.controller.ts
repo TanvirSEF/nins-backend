@@ -45,12 +45,16 @@ export class DoctorProfileController {
     description: 'Doctor profile created',
     type: DoctorProfile,
   })
-  @ApiResponse({ status: 400, description: 'Invalid input or validation error' })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input or validation error',
+  })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
-  @ApiResponse({ status: 409, description: 'Doctor profile already exists or BMDC already registered' })
-  onboard(
-    @Body() dto: CreateDoctorProfileDto,
-  ): Promise<DoctorProfileDocument> {
+  @ApiResponse({
+    status: 409,
+    description: 'Doctor profile already exists or BMDC already registered',
+  })
+  onboard(@Body() dto: CreateDoctorProfileDto): Promise<DoctorProfileDocument> {
     return this.doctorService.onboard(dto);
   }
 

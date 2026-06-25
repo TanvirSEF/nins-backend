@@ -11,7 +11,10 @@ export class FileFilterDto extends PaginationDto {
   @IsMongoId()
   ownerId?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by category', enum: FileCategory })
+  @ApiPropertyOptional({
+    description: 'Filter by category',
+    enum: FileCategory,
+  })
   @Transform(({ value }) => (value === '' ? undefined : value))
   @IsOptional()
   @IsEnum(FileCategory)

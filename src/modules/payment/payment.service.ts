@@ -103,10 +103,7 @@ export class PaymentService {
           const session = await this.sslCommerzService.queryByTransactionId(
             existingPayment.tranId,
           );
-          if (
-            session?.status === 'VALID' ||
-            session?.status === 'VALIDATED'
-          ) {
+          if (session?.status === 'VALID' || session?.status === 'VALIDATED') {
             // Payment actually completed — update records
             existingPayment.status = PaymentStatus.VALIDATED;
             existingPayment.paidAt = new Date();
@@ -190,7 +187,8 @@ export class PaymentService {
         };
       } else {
         payment.status = PaymentStatus.FAILED;
-        payment.errorReason = response?.failedreason || 'SSLCommerz init failed';
+        payment.errorReason =
+          response?.failedreason || 'SSLCommerz init failed';
         await payment.save();
         throw new BadRequestException(
           `Payment gateway error: ${response?.failedreason || 'Unknown error'}`,
@@ -310,13 +308,17 @@ export class PaymentService {
           .findById(payment.appointmentId)
           .exec();
         await this.notificationService
-          .notify(String(payment.patientId), NotificationType.APPOINTMENT_CONFIRMED, {
-            appointmentDate: appointment?.appointmentDate,
-            serialNumber: appointment?.serialNumber,
-            amount: payment.amount,
-            tranId: payment.tranId,
-            appointmentId: String(payment.appointmentId),
-          })
+          .notify(
+            String(payment.patientId),
+            NotificationType.APPOINTMENT_CONFIRMED,
+            {
+              appointmentDate: appointment?.appointmentDate,
+              serialNumber: appointment?.serialNumber,
+              amount: payment.amount,
+              tranId: payment.tranId,
+              appointmentId: String(payment.appointmentId),
+            },
+          )
           .catch(() => null);
       } else {
         payment.status = PaymentStatus.FAILED;
@@ -339,9 +341,7 @@ export class PaymentService {
     queryParams: Record<string, any>,
   ): Promise<{ success: boolean; tranId?: string; message: string }> {
     const { tran_id } = queryParams;
-    const payment = await this.paymentModel
-      .findOne({ tranId: tran_id })
-      .exec();
+    const payment = await this.paymentModel.findOne({ tranId: tran_id }).exec();
 
     if (!payment) {
       return { success: false, message: 'Payment record not found' };
@@ -359,9 +359,7 @@ export class PaymentService {
     // Try to validate now
     if (payment.valId) {
       try {
-        const validation = await this.sslCommerzService.validate(
-          payment.valId,
-        );
+        const validation = await this.sslCommerzService.validate(payment.valId);
         if (
           validation?.status === 'VALID' ||
           validation?.status === 'VALIDATED'
@@ -398,9 +396,7 @@ export class PaymentService {
     queryParams: Record<string, any>,
   ): Promise<{ success: boolean; tranId?: string; message: string }> {
     const { tran_id } = queryParams;
-    const payment = await this.paymentModel
-      .findOne({ tranId: tran_id })
-      .exec();
+    const payment = await this.paymentModel.findOne({ tranId: tran_id }).exec();
 
     if (payment && payment.status === PaymentStatus.PENDING) {
       payment.status = PaymentStatus.FAILED;
@@ -418,9 +414,7 @@ export class PaymentService {
     queryParams: Record<string, any>,
   ): Promise<{ success: boolean; tranId?: string; message: string }> {
     const { tran_id } = queryParams;
-    const payment = await this.paymentModel
-      .findOne({ tranId: tran_id })
-      .exec();
+    const payment = await this.paymentModel.findOne({ tranId: tran_id }).exec();
 
     if (payment && payment.status === PaymentStatus.PENDING) {
       payment.status = PaymentStatus.CANCELLED;
@@ -491,8 +485,7 @@ export class PaymentService {
 
     const query: any = {};
     if (status) query.status = status;
-    if (appointmentId)
-      query.appointmentId = new Types.ObjectId(appointmentId);
+    if (appointmentId) query.appointmentId = new Types.ObjectId(appointmentId);
 
     const [payments, total] = await Promise.all([
       this.paymentModel
@@ -539,16 +532,10 @@ export class PaymentService {
   }
 
   // ─── Live Transaction Query (admin) ─────────────────────────────────────────
-  async queryTransactionStatus(
-    tranId: string,
-  ): Promise<Record<string, any>> {
-    const payment = await this.paymentModel
-      .findOne({ tranId })
-      .exec();
+  async queryTransactionStatus(tranId: string): Promise<Record<string, any>> {
+    const payment = await this.paymentModel.findOne({ tranId }).exec();
     if (!payment) {
-      throw new NotFoundException(
-        `Payment with tranId ${tranId} not found`,
-      );
+      throw new NotFoundException(`Payment with tranId ${tranId} not found`);
     }
 
     const liveStatus =

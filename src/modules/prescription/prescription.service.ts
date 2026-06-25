@@ -10,10 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import {
-  Prescription,
-  PrescriptionDocument,
-} from './prescription.schema';
+import { Prescription, PrescriptionDocument } from './prescription.schema';
 import {
   MedicalRecord,
   MedicalRecordDocument,
@@ -184,8 +181,7 @@ export class PrescriptionService {
   // ─── Find One ─────────────────────────────────────────────────────────────────
   async findOne(id: string): Promise<PrescriptionDocument> {
     const cacheKey = `prescriptions:${id}`;
-    const cached =
-      await this.cacheManager.get<PrescriptionDocument>(cacheKey);
+    const cached = await this.cacheManager.get<PrescriptionDocument>(cacheKey);
     if (cached) return cached;
 
     const prescription = await this.prescriptionModel
@@ -256,8 +252,7 @@ export class PrescriptionService {
     medicalRecordId: string,
   ): Promise<PrescriptionDocument> {
     const cacheKey = `prescriptions:medical-record:${medicalRecordId}`;
-    const cached =
-      await this.cacheManager.get<PrescriptionDocument>(cacheKey);
+    const cached = await this.cacheManager.get<PrescriptionDocument>(cacheKey);
     if (cached) return cached;
 
     const prescription = await this.prescriptionModel
@@ -284,8 +279,7 @@ export class PrescriptionService {
     appointmentId: string,
   ): Promise<PrescriptionDocument> {
     const cacheKey = `prescriptions:appointment:${appointmentId}`;
-    const cached =
-      await this.cacheManager.get<PrescriptionDocument>(cacheKey);
+    const cached = await this.cacheManager.get<PrescriptionDocument>(cacheKey);
     if (cached) return cached;
 
     const prescription = await this.prescriptionModel

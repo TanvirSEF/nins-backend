@@ -18,9 +18,7 @@ import { Role } from '../user/user.schema';
 @ApiBearerAuth('JWT-auth')
 @Controller('bed-management')
 export class BedManagementController {
-  constructor(
-    private readonly bedManagementService: BedManagementService,
-  ) {}
+  constructor(private readonly bedManagementService: BedManagementService) {}
 
   @Get('live-board')
   @Public()
@@ -66,7 +64,10 @@ export class BedManagementController {
   })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
   @ApiResponse({ status: 200, description: 'Bed status updated', type: Bed })
-  @ApiResponse({ status: 400, description: 'Bed already occupied or missing patient name' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bed already occupied or missing patient name',
+  })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Bed not found' })
   updateBedStatus(

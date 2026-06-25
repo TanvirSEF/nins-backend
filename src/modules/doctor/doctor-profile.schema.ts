@@ -59,7 +59,8 @@ export class DoctorProfile {
 
   @ApiPropertyOptional({
     description: 'Short biography',
-    example: 'Dr. Rahman is a renowned neurosurgeon with 20+ years of experience.',
+    example:
+      'Dr. Rahman is a renowned neurosurgeon with 20+ years of experience.',
   })
   @Prop({ trim: true })
   bio?: string;

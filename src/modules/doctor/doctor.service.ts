@@ -9,10 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import {
-  DoctorProfile,
-  DoctorProfileDocument,
-} from './doctor-profile.schema';
+import { DoctorProfile, DoctorProfileDocument } from './doctor-profile.schema';
 import {
   Department,
   DepartmentDocument,
@@ -179,8 +176,7 @@ export class DoctorService {
 
   async findOne(id: string): Promise<DoctorProfileDocument> {
     const cacheKey = `doctors:${id}`;
-    const cached =
-      await this.cacheManager.get<DoctorProfileDocument>(cacheKey);
+    const cached = await this.cacheManager.get<DoctorProfileDocument>(cacheKey);
     if (cached) return cached;
 
     const doctor = await this.doctorModel
@@ -202,9 +198,7 @@ export class DoctorService {
   ): Promise<DoctorProfileDocument> {
     // Validate departmentId if being changed
     if (dto.departmentId) {
-      const department = await this.deptModel
-        .findById(dto.departmentId)
-        .exec();
+      const department = await this.deptModel.findById(dto.departmentId).exec();
       if (!department) {
         throw new NotFoundException('Department not found');
       }

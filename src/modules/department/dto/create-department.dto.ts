@@ -35,7 +35,9 @@ export class CreateDepartmentDto {
   })
   @IsString()
   @IsNotEmpty()
-  @Transform(({ value }) => (typeof value === 'string' ? value.toUpperCase() : value))
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.toUpperCase() : value,
+  )
   code: string;
 
   @ApiPropertyOptional({

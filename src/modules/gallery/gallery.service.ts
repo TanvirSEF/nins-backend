@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  Inject,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cache } from 'cache-manager';
@@ -43,10 +39,7 @@ export class GalleryService {
     dto: CreateGalleryDto,
     userId: string,
   ): Promise<GalleryItemDocument> {
-    const { url, r2Key } = await this.imageService.uploadImage(
-      file,
-      'gallery',
-    );
+    const { url, r2Key } = await this.imageService.uploadImage(file, 'gallery');
 
     const item = new this.galleryModel({
       title: dto.title,
@@ -147,9 +140,7 @@ export class GalleryService {
       for (const l of [10, 25, 50, 100]) {
         for (const cat of ['all', ...Object.values(GalleryCategory)]) {
           keysToDelete.push(
-            this.cacheManager.del(
-              `gallery:cat:${cat}:page:${p}:limit:${l}`,
-            ),
+            this.cacheManager.del(`gallery:cat:${cat}:page:${p}:limit:${l}`),
           );
         }
       }

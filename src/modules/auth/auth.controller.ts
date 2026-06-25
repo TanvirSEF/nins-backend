@@ -1,5 +1,10 @@
 import { Controller, Post, Get, Patch, Body, HttpCode } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -16,7 +21,11 @@ export class AuthController {
   @Post('register')
   @HttpCode(201)
   @ApiOperation({ summary: 'Register a new user' })
-  @ApiResponse({ status: 201, description: 'User registered successfully', type: User })
+  @ApiResponse({
+    status: 201,
+    description: 'User registered successfully',
+    type: User,
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @ApiResponse({ status: 409, description: 'Email already registered' })
   register(@Body() registerDto: RegisterDto) {

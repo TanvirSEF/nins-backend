@@ -24,7 +24,7 @@ export const getDatabaseConfig = (): MongooseModuleAsyncOptions => ({
     bufferCommands: true,
 
     // ─── Replica Set ───
-    readPreference: configService.get('MONGO_READ_PREFERENCE', 'primary') as any,
+    readPreference: configService.get('MONGO_READ_PREFERENCE', 'primary'),
 
     // ─── Connection Events ───
     connectionFactory: (connection: Connection) => {

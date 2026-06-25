@@ -38,10 +38,20 @@ export class AppointmentController {
   @Post()
   @Roles(Role.PATIENT)
   @ApiOperation({ summary: 'Book an appointment (PATIENT role)' })
-  @ApiResponse({ status: 201, description: 'Appointment booked', type: Appointment })
-  @ApiResponse({ status: 400, description: 'Invalid date, day mismatch, or slots full' })
+  @ApiResponse({
+    status: 201,
+    description: 'Appointment booked',
+    type: Appointment,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid date, day mismatch, or slots full',
+  })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
-  @ApiResponse({ status: 409, description: 'Duplicate booking — already booked this doctor on this date' })
+  @ApiResponse({
+    status: 409,
+    description: 'Duplicate booking — already booked this doctor on this date',
+  })
   @ApiResponse({ status: 404, description: 'Doctor or schedule not found' })
   createAppointment(
     @Body() dto: CreateAppointmentDto,
@@ -56,20 +66,32 @@ export class AppointmentController {
     summary: 'Book appointment + initiate payment in one step (PATIENT)',
   })
   @ApiResponse({ status: 201, description: 'Returns gateway URL for payment' })
-  @ApiResponse({ status: 400, description: 'Booking validation or gateway error' })
+  @ApiResponse({
+    status: 400,
+    description: 'Booking validation or gateway error',
+  })
   @ApiResponse({ status: 409, description: 'Duplicate booking' })
   async bookWithPayment(
     @Body() dto: CreateAppointmentDto,
     @CurrentUser() user: UserDocument,
-  ): Promise<{ appointmentId: string; tranId: string; gatewayPageURL: string }> {
+  ): Promise<{
+    appointmentId: string;
+    tranId: string;
+    gatewayPageURL: string;
+  }> {
     return this.appointmentService.bookWithPayment(dto, String(user._id));
   }
 
   @Get(':id/ticket')
-  @ApiOperation({ summary: 'Download appointment ticket as PDF (confirmed only)' })
+  @ApiOperation({
+    summary: 'Download appointment ticket as PDF (confirmed only)',
+  })
   @ApiParam({ name: 'id', description: 'Appointment ObjectId', type: String })
   @ApiResponse({ status: 200, description: 'PDF ticket' })
-  @ApiResponse({ status: 400, description: 'Appointment not confirmed or not paid' })
+  @ApiResponse({
+    status: 400,
+    description: 'Appointment not confirmed or not paid',
+  })
   @ApiResponse({ status: 403, description: 'Not your appointment' })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
   async getTicket(
@@ -95,9 +117,12 @@ export class AppointmentController {
   }
 
   @Get('my-tickets')
-  @ApiOperation({ summary: 'Get current user\'s appointment history' })
+  @ApiOperation({ summary: "Get current user's appointment history" })
   @ApiPaginatedResponse(Appointment)
-  @ApiResponse({ status: 200, description: 'Paginated list of your appointments' })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of your appointments',
+  })
   findMyTickets(
     @CurrentUser() user: UserDocument,
     @Query() filters: AppointmentFilterDto,
@@ -108,8 +133,17 @@ export class AppointmentController {
   @Get('doctor/:doctorId')
   @Public()
   @ApiOperation({ summary: 'Get appointments for a specific doctor (public)' })
-  @ApiParam({ name: 'doctorId', description: 'DoctorProfile ObjectId', type: String })
-  @ApiQuery({ name: 'date', description: 'Filter by date (YYYY-MM-DD)', required: false, type: String })
+  @ApiParam({
+    name: 'doctorId',
+    description: 'DoctorProfile ObjectId',
+    type: String,
+  })
+  @ApiQuery({
+    name: 'date',
+    description: 'Filter by date (YYYY-MM-DD)',
+    required: false,
+    type: String,
+  })
   @ApiResponse({ status: 200, description: 'Appointments for the doctor' })
   findByDoctor(
     @Param('doctorId') doctorId: string,
@@ -121,7 +155,11 @@ export class AppointmentController {
   @Get(':id')
   @ApiOperation({ summary: 'Get an appointment by ID' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Appointment found', type: Appointment })
+  @ApiResponse({
+    status: 200,
+    description: 'Appointment found',
+    type: Appointment,
+  })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
   findOne(@Param('id') id: string): Promise<AppointmentDocument> {
     return this.appointmentService.findOne(id);
@@ -130,7 +168,11 @@ export class AppointmentController {
   @Patch(':id/status')
   @ApiOperation({ summary: 'Update appointment status (role-based)' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Status updated', type: Appointment })
+  @ApiResponse({
+    status: 200,
+    description: 'Status updated',
+    type: Appointment,
+  })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
   updateStatus(
@@ -145,7 +187,11 @@ export class AppointmentController {
   @Roles(Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Delete an appointment (SUPER_ADMIN only)' })
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Appointment deleted', type: Appointment })
+  @ApiResponse({
+    status: 200,
+    description: 'Appointment deleted',
+    type: Appointment,
+  })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   @ApiResponse({ status: 404, description: 'Appointment not found' })
   remove(@Param('id') id: string): Promise<AppointmentDocument> {

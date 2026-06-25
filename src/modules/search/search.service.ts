@@ -85,11 +85,7 @@ export class SearchService {
       tasks.push(
         this.doctorModel
           .find({
-            $or: [
-              { designation: rx },
-              { bmdcReg: rx },
-              { specialties: rx },
-            ],
+            $or: [{ designation: rx }, { bmdcReg: rx }, { specialties: rx }],
           })
           .populate('userId', 'name email phone')
           .populate('departmentId', 'name')

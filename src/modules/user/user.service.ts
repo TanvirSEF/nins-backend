@@ -43,11 +43,14 @@ export class UserService {
     return saved;
   }
 
-  async findAll(pagination: PaginationDto): Promise<PaginatedResult<UserDocument>> {
+  async findAll(
+    pagination: PaginationDto,
+  ): Promise<PaginatedResult<UserDocument>> {
     const { page, limit } = pagination;
     const cacheKey = `users:page:${page}:limit:${limit}`;
 
-    const cached = await this.cacheManager.get<PaginatedResult<UserDocument>>(cacheKey);
+    const cached =
+      await this.cacheManager.get<PaginatedResult<UserDocument>>(cacheKey);
     if (cached) return cached;
 
     const [users, total] = await Promise.all([
@@ -91,7 +94,10 @@ export class UserService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserDocument> {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserDocument> {
     const user = await this.userModel
       .findByIdAndUpdate(id, updateUserDto, { new: true, runValidators: true })
       .exec();

@@ -16,7 +16,10 @@ export class Vitals {
   @Prop()
   temperature?: number;
 
-  @ApiPropertyOptional({ description: 'Respiratory rate (breaths/min)', example: 18 })
+  @ApiPropertyOptional({
+    description: 'Respiratory rate (breaths/min)',
+    example: 18,
+  })
   @Prop()
   respiratoryRate?: number;
 
@@ -79,7 +82,7 @@ export class MedicalRecord {
   doctorId: Types.ObjectId;
 
   @ApiProperty({
-    description: 'Patient\'s chief complaint',
+    description: "Patient's chief complaint",
     example: 'Severe headache for 3 days',
   })
   @Prop({ required: true, trim: true })

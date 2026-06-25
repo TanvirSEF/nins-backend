@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DoctorDashboardService } from './doctor-dashboard.service';
 import { DoctorDashboardController } from './doctor-dashboard.controller';
-import { Appointment, AppointmentSchema } from '../appointment/appointment.schema';
+import {
+  Appointment,
+  AppointmentSchema,
+} from '../appointment/appointment.schema';
 import {
   DoctorProfile,
   DoctorProfileSchema,

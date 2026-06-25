@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  ForbiddenException,
-  Inject,
-} from '@nestjs/common';
+import { Injectable, ForbiddenException, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cache } from 'cache-manager';
@@ -24,7 +20,10 @@ import {
   Prescription,
   PrescriptionDocument,
 } from '../prescription/prescription.schema';
-import { Department, DepartmentDocument } from '../department/department.schema';
+import {
+  Department,
+  DepartmentDocument,
+} from '../department/department.schema';
 
 @Injectable()
 export class DoctorDashboardService {
@@ -144,7 +143,9 @@ export class DoctorDashboardService {
 
       // Total distinct patients seen (all-time)
       this.appointmentModel
-        .aggregate<{ count: number }>([
+        .aggregate<{
+          count: number;
+        }>([
           { $match: { doctorId: doctor._id } },
           { $group: { _id: '$patientId' } },
           { $count: 'count' },
@@ -198,9 +199,7 @@ export class DoctorDashboardService {
   }
 
   // ─── Resolve DoctorProfile from JWT userId ───────────────────────────────────
-  private async resolveDoctor(
-    userId: string,
-  ): Promise<DoctorProfileDocument> {
+  private async resolveDoctor(userId: string): Promise<DoctorProfileDocument> {
     const doctor = await this.doctorModel
       .findOne({ userId: new Types.ObjectId(userId) })
       .exec();

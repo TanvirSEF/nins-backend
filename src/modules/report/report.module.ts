@@ -3,7 +3,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ReportService } from './report.service';
 import { ReportController } from './report.controller';
 import { Payment, PaymentSchema } from '../payment/payment.schema';
-import { Appointment, AppointmentSchema } from '../appointment/appointment.schema';
+import {
+  Appointment,
+  AppointmentSchema,
+} from '../appointment/appointment.schema';
 import { User, UserSchema } from '../user/user.schema';
 import {
   DoctorProfile,

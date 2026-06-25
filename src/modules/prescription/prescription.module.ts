@@ -2,10 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PrescriptionService } from './prescription.service';
 import { PrescriptionController } from './prescription.controller';
-import {
-  Prescription,
-  PrescriptionSchema,
-} from './prescription.schema';
+import { Prescription, PrescriptionSchema } from './prescription.schema';
 import {
   MedicalRecord,
   MedicalRecordSchema,
@@ -15,7 +12,10 @@ import {
   DoctorProfileSchema,
 } from '../doctor/doctor-profile.schema';
 import { User, UserSchema } from '../user/user.schema';
-import { Appointment, AppointmentSchema } from '../appointment/appointment.schema';
+import {
+  Appointment,
+  AppointmentSchema,
+} from '../appointment/appointment.schema';
 
 @Module({
   imports: [

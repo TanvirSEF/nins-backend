@@ -116,7 +116,7 @@ export class PathologyReportService {
       report.resultSummary = dto.resultSummary;
     }
     if (dto.resultValues) {
-      report.resultValues = dto.resultValues as any;
+      report.resultValues = dto.resultValues;
     }
 
     // Default to COMPLETED when results are added
@@ -130,10 +130,14 @@ export class PathologyReportService {
     // Notify patient: report ready
     if (updated.status === PathologyStatus.COMPLETED) {
       await this.notificationService
-        .notify(String(updated.patientId), NotificationType.PATHOLOGY_REPORT_READY, {
-          testName: updated.testName,
-          reportId: String(updated._id),
-        })
+        .notify(
+          String(updated.patientId),
+          NotificationType.PATHOLOGY_REPORT_READY,
+          {
+            testName: updated.testName,
+            reportId: String(updated._id),
+          },
+        )
         .catch(() => null);
     }
 
@@ -155,7 +159,10 @@ export class PathologyReportService {
     if (!report) {
       throw new NotFoundException(`Pathology report #${id} not found`);
     }
-    await this.invalidateReportCache(String(report._id), String(report.patientId));
+    await this.invalidateReportCache(
+      String(report._id),
+      String(report.patientId),
+    );
     return report;
   }
 
@@ -213,7 +220,10 @@ export class PathologyReportService {
     if (!report) {
       throw new NotFoundException(`Pathology report #${id} not found`);
     }
-    await this.invalidateReportCache(String(report._id), String(report.patientId));
+    await this.invalidateReportCache(
+      String(report._id),
+      String(report.patientId),
+    );
     return report;
   }
 
@@ -275,10 +285,7 @@ export class PathologyReportService {
     const keysToDelete: Promise<any>[] = [];
     for (let p = 1; p <= 50; p++) {
       for (const l of [10, 25, 50, 100]) {
-        for (const st of [
-          'all',
-          ...Object.values(PathologyStatus),
-        ]) {
+        for (const st of ['all', ...Object.values(PathologyStatus)]) {
           keysToDelete.push(
             this.cacheManager.del(
               `pathology:patient:${patientId}:status:${st}:cat:all:page:${p}:limit:${l}`,

@@ -2,10 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DoctorService } from './doctor.service';
 import { DoctorProfileController } from './doctor-profile.controller';
-import {
-  DoctorProfile,
-  DoctorProfileSchema,
-} from './doctor-profile.schema';
+import { DoctorProfile, DoctorProfileSchema } from './doctor-profile.schema';
 import { Department, DepartmentSchema } from '../department/department.schema';
 import { User, UserSchema } from '../user/user.schema';
 import { UploadModule } from '../upload/upload.module';

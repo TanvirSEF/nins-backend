@@ -30,7 +30,7 @@ export class RedisIoAdapter extends IoAdapter {
   // Return type mirrors the official NestJS docs (`any`) to stay compatible
   // with the base IoAdapter signature across versions. Visibility is `public`
   // to match the base class declaration in this @nestjs/platform-socket.io.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   public createIOServer(port: number, options?: ServerOptions): any {
     const server = super.createIOServer(port, options);
 

@@ -43,7 +43,11 @@ export class FileController {
   @Post(':id/confirm')
   @ApiOperation({ summary: 'Confirm upload completed (verifies R2 object)' })
   @ApiParam({ name: 'id', description: 'File ObjectId', type: String })
-  @ApiResponse({ status: 200, description: 'Upload confirmed', type: StoredFile })
+  @ApiResponse({
+    status: 200,
+    description: 'Upload confirmed',
+    type: StoredFile,
+  })
   @ApiResponse({ status: 400, description: 'Object not found in storage' })
   @ApiResponse({ status: 403, description: 'Not your upload' })
   confirmUpload(
@@ -68,9 +72,7 @@ export class FileController {
   @ApiParam({ name: 'id', description: 'File ObjectId', type: String })
   @ApiResponse({ status: 200, description: 'Read URL' })
   @ApiResponse({ status: 400, description: 'Upload not confirmed' })
-  getReadUrl(
-    @Param('id') id: string,
-  ): Promise<{ url: string }> {
+  getReadUrl(@Param('id') id: string): Promise<{ url: string }> {
     return this.fileService.getSignedReadUrl(id);
   }
 
@@ -92,6 +94,10 @@ export class FileController {
     @Param('id') id: string,
     @CurrentUser() user: UserDocument,
   ): Promise<StoredFileDocument> {
-    return this.fileService.remove(id, String(user._id), user.role === Role.SUPER_ADMIN);
+    return this.fileService.remove(
+      id,
+      String(user._id),
+      user.role === Role.SUPER_ADMIN,
+    );
   }
 }

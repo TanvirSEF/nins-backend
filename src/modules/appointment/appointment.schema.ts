@@ -24,7 +24,12 @@ export class Appointment {
     description: 'Reference to DoctorProfile',
     example: '507f1f77bcf86cd799439012',
   })
-  @Prop({ type: Types.ObjectId, ref: 'DoctorProfile', required: true, index: true })
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'DoctorProfile',
+    required: true,
+    index: true,
+  })
   doctorId: Types.ObjectId;
 
   @ApiProperty({

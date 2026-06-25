@@ -8,10 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  PathologyStatus,
-  ResultFlag,
-} from '../pathology-report.schema';
+import { PathologyStatus, ResultFlag } from '../pathology-report.schema';
 
 export class ResultValueDto {
   @ApiProperty({ description: 'Parameter name', example: 'Hemoglobin' })
