@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -15,7 +16,14 @@ async function bootstrap() {
 
   // ─── Security ───
   app.use(helmet());
-  app.enableCors();
+  // Refresh-token cookie needs cookie-parser, and the browser only sends it when
+  // credentials are allowed. CORS_ORIGINS (comma list) restricts the client origin
+  // in production; when unset we reflect the request origin (same-origin friendly).
+  app.use(cookieParser());
+  const corsOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean)
+    : true;
+  app.enableCors({ origin: corsOrigins, credentials: true });
 
   // ─── Performance ───
   app.use(compression());

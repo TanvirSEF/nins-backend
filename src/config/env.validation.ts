@@ -36,13 +36,35 @@ export class EnvironmentVariables {
   @IsString()
   REDIS_PASSWORD: string = '';
 
-  // JWT
+  // JWT — access token (short-lived, sent as Bearer; held in client memory only).
   @IsString()
   JWT_SECRET: string;
 
   @IsOptional()
   @IsString()
-  JWT_EXPIRES_IN: string = '7d';
+  JWT_ACCESS_EXPIRES_IN: string = '15m';
+
+  // JWT — refresh token (long-lived, httpOnly cookie; rotated + reuse-tracked in Redis).
+  // Required: a refresh token must be signed with a distinct secret from the access token.
+  @IsString()
+  JWT_REFRESH_SECRET: string;
+
+  @IsOptional()
+  @IsString()
+  JWT_REFRESH_EXPIRES_IN: string = '7d';
+
+  // CORS — comma-separated allowed browser origins (e.g. "https://app.example.com").
+  // When unset, the request origin is reflected (same-origin friendly). Set this to the
+  // frontend origin(s) in production once that domain is finalized.
+  @IsOptional()
+  @IsString()
+  CORS_ORIGINS: string;
+
+  // Cookie domain for the refresh cookie. Omit (host-only cookie) when the frontend and
+  // backend share an origin; set to ".zephlotech.com" only if they're on different subdomains.
+  @IsOptional()
+  @IsString()
+  COOKIE_DOMAIN: string;
 
   // SSLCommerz Payment Gateway
   @IsString()
