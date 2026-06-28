@@ -95,7 +95,7 @@ export class FileService {
     );
   }
 
-  // ─── Request a presigned PUT URL ────────────────────────────────────────────
+  // Request a presigned PUT URL
   async requestUpload(
     dto: RequestUploadDto,
     uploadedBy: string,
@@ -156,7 +156,7 @@ export class FileService {
     }
   }
 
-  // ─── Confirm upload completed (verify R2 object exists) ──────────────────────
+  // Confirm upload completed (verify R2 object exists)
   async confirmUpload(
     fileId: string,
     userId: string,
@@ -198,7 +198,7 @@ export class FileService {
     return updated;
   }
 
-  // ─── Get a fresh presigned read URL ──────────────────────────────────────────
+  // Get a fresh presigned read URL
   async getSignedReadUrl(fileId: string): Promise<{ url: string }> {
     const file = await this.fileModel.findById(fileId).exec();
     if (!file) {
@@ -210,7 +210,7 @@ export class FileService {
     return { url: await this.resolveReadUrl(file.r2Key) };
   }
 
-  // ─── Patient's own files ─────────────────────────────────────────────────────
+  // Patient's own files
   async findMyFiles(
     userId: string,
     filters: FileFilterDto,
@@ -222,7 +222,7 @@ export class FileService {
     );
   }
 
-  // ─── All files (admin/staff) ─────────────────────────────────────────────────
+  // All files (admin/staff)
   async findAll(
     filters: FileFilterDto,
   ): Promise<PaginatedResult<StoredFileDocument>> {
@@ -233,7 +233,7 @@ export class FileService {
     );
   }
 
-  // ─── Single file ─────────────────────────────────────────────────────────────
+  // Single file
   async findOne(fileId: string): Promise<StoredFileDocument> {
     const file = await this.fileModel
       .findById(fileId)
@@ -246,7 +246,7 @@ export class FileService {
     return file;
   }
 
-  // ─── Delete file (R2 + DB) ───────────────────────────────────────────────────
+  // Delete file (R2 + DB)
   async remove(
     fileId: string,
     userId: string,
@@ -280,7 +280,7 @@ export class FileService {
     return file;
   }
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────────
+  // Helpers
   private async resolveReadUrl(r2Key: string): Promise<string> {
     if (this.publicBaseUrl) {
       return `${this.publicBaseUrl}/${r2Key}`;

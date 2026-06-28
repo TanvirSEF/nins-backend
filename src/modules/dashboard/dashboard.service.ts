@@ -45,7 +45,7 @@ export class DashboardService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Full Dashboard Stats ─────────────────────────────────────────────────────
+  // Full Dashboard Stats
   async getFullStats(): Promise<DashboardStatsResponse> {
     const cacheKey = 'dashboard:stats';
     const cached =
@@ -241,7 +241,7 @@ export class DashboardService {
         .exec(),
     ]);
 
-    // ─── Assemble Response ────────────────────────────────────────────────────
+    // Assemble Response
 
     const overview: OverviewStats = {
       totalPatients,
@@ -304,7 +304,7 @@ export class DashboardService {
     return response;
   }
 
-  // ─── Sub-endpoints (extract from full stats via cache) ────────────────────────
+  // Sub-endpoints (extract from full stats via cache)
   async getOverview(): Promise<OverviewStats> {
     const stats = await this.getFullStats();
     return stats.overview;
@@ -320,7 +320,7 @@ export class DashboardService {
     return stats.bedStatus;
   }
 
-  // ─── Helpers ──────────────────────────────────────────────────────────────────
+  // Helpers
   private startOfDay(date: Date): Date {
     const d = new Date(date);
     d.setUTCHours(0, 0, 0, 0);

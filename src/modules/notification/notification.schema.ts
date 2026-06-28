@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Notification Type Enum ─────────────────────────────────────────────────────
+// Notification Type Enum
 export enum NotificationType {
   APPOINTMENT_BOOKED = 'APPOINTMENT_BOOKED',
   APPOINTMENT_CONFIRMED = 'APPOINTMENT_CONFIRMED',
@@ -17,7 +17,7 @@ export enum NotificationType {
   PATHOLOGY_REPORT_READY = 'PATHOLOGY_REPORT_READY',
 }
 
-// ─── Notification Schema ────────────────────────────────────────────────────────
+// Notification Schema
 export type NotificationDocument = HydratedDocument<Notification>;
 
 @Schema({ timestamps: true })

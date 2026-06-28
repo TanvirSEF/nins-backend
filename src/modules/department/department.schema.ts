@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Hospital Unit Sub-Document ───────────────────────────────────────────────
+// Hospital Unit Sub-Document
 export class HospitalUnit {
   @ApiProperty({ description: 'Unit name', example: 'Stroke Unit' })
   @Prop({ required: true, trim: true })
@@ -15,7 +15,7 @@ export class HospitalUnit {
 
 export const HospitalUnitSchema = SchemaFactory.createForClass(HospitalUnit);
 
-// ─── Department Schema ────────────────────────────────────────────────────────
+// Department Schema
 export type DepartmentDocument = HydratedDocument<Department>;
 
 @Schema({ timestamps: true })

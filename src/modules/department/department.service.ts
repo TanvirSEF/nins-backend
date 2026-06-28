@@ -29,7 +29,7 @@ export class DepartmentService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Upload department image/logo ────────────────────────────────────────────
+  // Upload department image/logo
   async updateImage(
     id: string,
     file: Express.Multer.File,

@@ -7,26 +7,26 @@ export const getDatabaseConfig = (): MongooseModuleAsyncOptions => ({
   useFactory: (configService: ConfigService) => ({
     uri: configService.get<string>('MONGO_URI'),
 
-    // ─── Connection Pool (optimized for 4 vCPU / 8GB RAM) ───
+    // Connection Pool (optimized for 4 vCPU / 8GB RAM)
     maxPoolSize: configService.get<number>('DB_POOL_SIZE', 100),
     minPoolSize: configService.get<number>('DB_MIN_POOL_SIZE', 20),
     maxIdleTimeMS: 30000, // close idle connections after 30s
 
-    // ─── Timeout Settings ───
+    // Timeout Settings
     serverSelectionTimeoutMS: 5000,
     waitQueueTimeoutMS: 10000,
     socketTimeoutMS: 45000,
     connectTimeoutMS: 10000,
 
-    // ─── Reliability ───
+    // Reliability
     retryWrites: true,
     heartbeatFrequencyMS: 10000,
     bufferCommands: true,
 
-    // ─── Replica Set ───
+    // Replica Set
     readPreference: configService.get('MONGO_READ_PREFERENCE', 'primary'),
 
-    // ─── Connection Events ───
+    // Connection Events
     connectionFactory: (connection: Connection) => {
       connection.on('connected', () => {
         console.log('MongoDB connected');

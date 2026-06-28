@@ -44,7 +44,7 @@ export class SearchService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Global search across patients, doctors, appointments ────────────────────
+  // Global search across patients, doctors, appointments
   async search(dto: SearchDto): Promise<PaginatedResult> {
     const term = dto.q.trim();
     const rx = { $regex: term, $options: 'i' };
@@ -56,7 +56,7 @@ export class SearchService {
 
     const tasks: Promise<SearchResult[]>[] = [];
 
-    // ─── Patients ──────────────────────────────────────────────────────────────
+    // Patients
     if (!type || type === 'patient') {
       tasks.push(
         this.userModel
@@ -80,7 +80,7 @@ export class SearchService {
       );
     }
 
-    // ─── Doctors ───────────────────────────────────────────────────────────────
+    // Doctors
     if (!type || type === 'doctor') {
       tasks.push(
         this.doctorModel
@@ -107,7 +107,7 @@ export class SearchService {
       );
     }
 
-    // ─── Appointments (by patient name/phone) ──────────────────────────────────
+    // Appointments (by patient name/phone)
     if (!type || type === 'appointment') {
       tasks.push(
         this.appointmentModel

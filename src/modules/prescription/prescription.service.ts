@@ -48,7 +48,7 @@ export class PrescriptionService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Create Prescription ──────────────────────────────────────────────────────
+  // Create Prescription
   async create(
     dto: CreatePrescriptionDto,
     userId: string,
@@ -129,7 +129,7 @@ export class PrescriptionService {
     return saved;
   }
 
-  // ─── Find All (Paginated + Cached) ───────────────────────────────────────────
+  // Find All (Paginated + Cached)
   async findAll(
     filters: PrescriptionFilterDto,
   ): Promise<PaginatedResult<PrescriptionDocument>> {
@@ -178,7 +178,7 @@ export class PrescriptionService {
     return result;
   }
 
-  // ─── Find One ─────────────────────────────────────────────────────────────────
+  // Find One
   async findOne(id: string): Promise<PrescriptionDocument> {
     const cacheKey = `prescriptions:${id}`;
     const cached = await this.cacheManager.get<PrescriptionDocument>(cacheKey);
@@ -200,7 +200,7 @@ export class PrescriptionService {
     return prescription;
   }
 
-  // ─── Patient's Own Prescriptions ──────────────────────────────────────────────
+  // Patient's Own Prescriptions
   async findMyPrescriptions(
     userId: string,
     filters: PrescriptionFilterDto,
@@ -247,7 +247,7 @@ export class PrescriptionService {
     return result;
   }
 
-  // ─── Find by Medical Record ───────────────────────────────────────────────────
+  // Find by Medical Record
   async findByMedicalRecord(
     medicalRecordId: string,
   ): Promise<PrescriptionDocument> {
@@ -274,7 +274,7 @@ export class PrescriptionService {
     return prescription;
   }
 
-  // ─── Find by Appointment ──────────────────────────────────────────────────────
+  // Find by Appointment
   async findByAppointment(
     appointmentId: string,
   ): Promise<PrescriptionDocument> {
@@ -301,7 +301,7 @@ export class PrescriptionService {
     return prescription;
   }
 
-  // ─── Update ───────────────────────────────────────────────────────────────────
+  // Update
   async update(
     id: string,
     dto: UpdatePrescriptionDto,
@@ -323,7 +323,7 @@ export class PrescriptionService {
     return prescription;
   }
 
-  // ─── Remove ───────────────────────────────────────────────────────────────────
+  // Remove
   async remove(id: string): Promise<PrescriptionDocument> {
     const prescription = await this.prescriptionModel
       .findByIdAndDelete(id)
@@ -342,7 +342,7 @@ export class PrescriptionService {
     return prescription;
   }
 
-  // ─── Cache Invalidation ───────────────────────────────────────────────────────
+  // Cache Invalidation
   private async invalidatePrescriptionCache(
     id: string,
     patientId: string,

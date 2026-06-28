@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Enums ──────────────────────────────────────────────────────────────────────
+// Enums
 export enum LeaveStatus {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
@@ -17,7 +17,7 @@ export enum LeaveType {
   PLANNED = 'PLANNED',
 }
 
-// ─── Leave Schema ───────────────────────────────────────────────────────────────
+// Leave Schema
 export type LeaveDocument = HydratedDocument<Leave>;
 
 @Schema({ timestamps: true })

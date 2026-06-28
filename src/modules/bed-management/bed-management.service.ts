@@ -26,7 +26,7 @@ export class BedManagementService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Lifecycle: Seed beds on startup if collection is empty ──────────────
+  // Lifecycle: Seed beds on startup if collection is empty
   async onModuleInit() {
     const count = await this.bedModel.countDocuments().exec();
     if (count > 0) return;
@@ -70,10 +70,10 @@ export class BedManagementService {
     }
 
     await this.bedModel.insertMany(beds);
-    console.log(`✅ Seeded ${beds.length} beds (16 ICU + 12 HDU)`);
+    console.log(`Seeded ${beds.length} beds (16 ICU + 12 HDU)`);
   }
 
-  // ─── Public: Live Availability Board ──────────────────────────────────────
+  // Public: Live Availability Board
   async getLiveAvailabilityBoard(): Promise<BedAvailability[]> {
     const cacheKey = 'bed-management:live-board';
     const cached = await this.cacheManager.get<BedAvailability[]>(cacheKey);
@@ -89,13 +89,13 @@ export class BedManagementService {
     return result;
   }
 
-  // ─── Public: Get all beds with optional type filter ───────────────────────
+  // Public: Get all beds with optional type filter
   async findAll(type?: BedType): Promise<BedDocument[]> {
     const query = type ? { type } : {};
     return this.bedModel.find(query).sort({ type: 1, bedNumber: 1 }).exec();
   }
 
-  // ─── Public: Get single bed ───────────────────────────────────────────────
+  // Public: Get single bed
   async findOne(id: string): Promise<BedDocument> {
     const bed = await this.bedModel.findById(id).exec();
     if (!bed) {
@@ -104,7 +104,7 @@ export class BedManagementService {
     return bed;
   }
 
-  // ─── Staff: Update bed status (assign/release) ───────────────────────────
+  // Staff: Update bed status (assign/release)
   async updateBedStatus(
     id: string,
     dto: UpdateBedStatusDto,
@@ -115,7 +115,7 @@ export class BedManagementService {
     }
 
     if (dto.isOccupied) {
-      // ─── Assigning a patient ────────────────────────────────────────────
+      // Assigning a patient
       if (!dto.currentPatientName) {
         throw new BadRequestException(
           'Patient name is required when occupying a bed',
@@ -130,7 +130,7 @@ export class BedManagementService {
       bed.currentPatientName = dto.currentPatientName;
       bed.admittedAt = new Date();
     } else {
-      // ─── Releasing a bed ────────────────────────────────────────────────
+      // Releasing a bed
       bed.isOccupied = false;
       bed.currentPatientName = undefined;
       bed.admittedAt = undefined;
@@ -141,7 +141,7 @@ export class BedManagementService {
     return updated;
   }
 
-  // ─── Private: Aggregation helper ──────────────────────────────────────────
+  // Private: Aggregation helper
   private async getAggregatedStats(bedType: BedType): Promise<BedAvailability> {
     const [total, occupied, wards] = await Promise.all([
       this.bedModel.countDocuments({ type: bedType }).exec(),
@@ -158,7 +158,7 @@ export class BedManagementService {
     };
   }
 
-  // ─── Private: Cache invalidation ──────────────────────────────────────────
+  // Private: Cache invalidation
   private async invalidateCache(): Promise<void> {
     await this.cacheManager.del('bed-management:live-board');
   }

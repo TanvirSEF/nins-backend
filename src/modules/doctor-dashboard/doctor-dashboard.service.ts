@@ -41,7 +41,7 @@ export class DoctorDashboardService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Full Doctor Dashboard ───────────────────────────────────────────────────
+  // Full Doctor Dashboard
   async getDashboard(userId: string): Promise<any> {
     const doctorProfile = await this.resolveDoctor(userId);
     const todayStr = new Date().toISOString().split('T')[0];
@@ -55,14 +55,14 @@ export class DoctorDashboardService {
     return data;
   }
 
-  // ─── Today's Queue only ──────────────────────────────────────────────────────
+  // Today's Queue only
   async getTodayQueue(userId: string): Promise<any[]> {
     const doctorProfile = await this.resolveDoctor(userId);
     const data = await this.buildDashboard(doctorProfile);
     return data.todayQueue;
   }
 
-  // ─── Stats only ──────────────────────────────────────────────────────────────
+  // Stats only
   async getStats(userId: string): Promise<any> {
     const doctorProfile = await this.resolveDoctor(userId);
     const data = await this.buildDashboard(doctorProfile);
@@ -72,7 +72,7 @@ export class DoctorDashboardService {
     };
   }
 
-  // ─── Build the dashboard data ────────────────────────────────────────────────
+  // Build the dashboard data
   private async buildDashboard(doctor: DoctorProfileDocument): Promise<any> {
     const now = new Date();
     const startOfToday = this.startOfDay(now);
@@ -198,7 +198,7 @@ export class DoctorDashboardService {
     };
   }
 
-  // ─── Resolve DoctorProfile from JWT userId ───────────────────────────────────
+  // Resolve DoctorProfile from JWT userId
   private async resolveDoctor(userId: string): Promise<DoctorProfileDocument> {
     const doctor = await this.doctorModel
       .findOne({ userId: new Types.ObjectId(userId) })

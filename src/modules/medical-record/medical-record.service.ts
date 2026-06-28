@@ -52,7 +52,7 @@ export class MedicalRecordService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Create Medical Record ────────────────────────────────────────────────────
+  // Create Medical Record
   async create(
     dto: CreateMedicalRecordDto,
     userId: string,
@@ -122,7 +122,7 @@ export class MedicalRecordService {
     return saved;
   }
 
-  // ─── Find All (Paginated + Cached) ───────────────────────────────────────────
+  // Find All (Paginated + Cached)
   async findAll(
     filters: MedicalRecordFilterDto,
   ): Promise<PaginatedResult<MedicalRecordDocument>> {
@@ -172,7 +172,7 @@ export class MedicalRecordService {
     return result;
   }
 
-  // ─── Find One ─────────────────────────────────────────────────────────────────
+  // Find One
   async findOne(id: string): Promise<MedicalRecordDocument> {
     const cacheKey = `medical-records:${id}`;
     const cached = await this.cacheManager.get<MedicalRecordDocument>(cacheKey);
@@ -193,7 +193,7 @@ export class MedicalRecordService {
     return record;
   }
 
-  // ─── Patient's Own Records ────────────────────────────────────────────────────
+  // Patient's Own Records
   async findMyRecords(
     userId: string,
     filters: MedicalRecordFilterDto,
@@ -241,7 +241,7 @@ export class MedicalRecordService {
     return result;
   }
 
-  // ─── Find by Appointment ──────────────────────────────────────────────────────
+  // Find by Appointment
   async findByAppointment(
     appointmentId: string,
   ): Promise<MedicalRecordDocument> {
@@ -266,7 +266,7 @@ export class MedicalRecordService {
     return record;
   }
 
-  // ─── Update ───────────────────────────────────────────────────────────────────
+  // Update
   async update(
     id: string,
     dto: UpdateMedicalRecordDto,
@@ -288,7 +288,7 @@ export class MedicalRecordService {
     return record;
   }
 
-  // ─── Remove ───────────────────────────────────────────────────────────────────
+  // Remove
   async remove(id: string): Promise<MedicalRecordDocument> {
     const record = await this.medicalRecordModel.findByIdAndDelete(id).exec();
 
@@ -305,7 +305,7 @@ export class MedicalRecordService {
     return record;
   }
 
-  // ─── Cache Invalidation ───────────────────────────────────────────────────────
+  // Cache Invalidation
   private async invalidateRecordCache(
     id: string,
     patientId: string,

@@ -13,7 +13,7 @@ import {
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Vitals DTO ─────────────────────────────────────────────────────────────────
+// Vitals DTO
 export class VitalsDto {
   @ApiPropertyOptional({ description: 'Blood pressure', example: '120/80' })
   @IsOptional()
@@ -64,7 +64,7 @@ export class VitalsDto {
   height?: number;
 }
 
-// ─── Create Medical Record DTO ──────────────────────────────────────────────────
+// Create Medical Record DTO
 export class CreateMedicalRecordDto {
   @ApiProperty({
     description: 'Appointment ID (must be COMPLETED)',

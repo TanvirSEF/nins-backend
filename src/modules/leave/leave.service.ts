@@ -55,7 +55,7 @@ export class LeaveService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Doctor requests leave ───────────────────────────────────────────────────
+  // Doctor requests leave
   async create(dto: CreateLeaveDto, userId: string): Promise<LeaveDocument> {
     // Resolve doctor profile
     const doctorProfile = await this.doctorModel
@@ -108,7 +108,7 @@ export class LeaveService {
     return saved;
   }
 
-  // ─── Review (approve/reject) ─────────────────────────────────────────────────
+  // Review (approve/reject)
   async review(
     id: string,
     dto: ReviewLeaveDto,
@@ -159,7 +159,7 @@ export class LeaveService {
     return updated;
   }
 
-  // ─── Doctor updates own PENDING leave ────────────────────────────────────────
+  // Doctor updates own PENDING leave
   async update(
     id: string,
     dto: UpdateLeaveDto,
@@ -198,7 +198,7 @@ export class LeaveService {
     return updated;
   }
 
-  // ─── Cancel / delete ─────────────────────────────────────────────────────────
+  // Cancel / delete
   async remove(
     id: string,
     userId: string,
@@ -226,7 +226,7 @@ export class LeaveService {
     return leave;
   }
 
-  // ─── Doctor's own leaves ─────────────────────────────────────────────────────
+  // Doctor's own leaves
   async findMyLeaves(
     userId: string,
     filters: LeaveFilterDto,
@@ -238,7 +238,7 @@ export class LeaveService {
     );
   }
 
-  // ─── All leaves (admin/staff) ────────────────────────────────────────────────
+  // All leaves (admin/staff)
   async findAll(
     filters: LeaveFilterDto,
   ): Promise<PaginatedResult<LeaveDocument>> {
@@ -249,7 +249,7 @@ export class LeaveService {
     );
   }
 
-  // ─── Single leave ────────────────────────────────────────────────────────────
+  // Single leave
   async findOne(id: string): Promise<LeaveDocument> {
     const leave = await this.leaveModel
       .findById(id)
@@ -263,7 +263,7 @@ export class LeaveService {
     return leave;
   }
 
-  // ─── Helper: check if doctor is on leave on a date (used by appointment booking) ──
+  // Helper: check if doctor is on leave on a date (used by appointment booking)
   async isDoctorOnLeave(
     doctorId: Types.ObjectId,
     date: Date,
@@ -279,7 +279,7 @@ export class LeaveService {
     return !!onLeave;
   }
 
-  // ─── Cancel appointments that fall within the leave range ────────────────────
+  // Cancel appointments that fall within the leave range
   private async cancelConflictingAppointments(
     leave: LeaveDocument,
   ): Promise<void> {
@@ -324,7 +324,7 @@ export class LeaveService {
     await Promise.all(notifications);
   }
 
-  // ─── Notify admins/staff about a new leave request ───────────────────────────
+  // Notify admins/staff about a new leave request
   private async notifyReviewersOfNewRequest(
     leave: LeaveDocument,
     doctor: DoctorProfileDocument,
@@ -350,7 +350,7 @@ export class LeaveService {
     await Promise.all(notifications);
   }
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────────
+  // Helpers
   private buildQuery(filters: LeaveFilterDto): any {
     const query: any = {};
     if (filters.doctorId) query.doctorId = new Types.ObjectId(filters.doctorId);

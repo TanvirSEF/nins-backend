@@ -123,7 +123,7 @@ export class RefreshTokenService {
     await this.redis.set(this.activeKey(payload), payload.sub, 'EX', this.ttl);
   }
 
-  // ── key helpers ──────────────────────────────────────────────────────────
+  // key helpers
   private readonly keyspace = 'nins:refresh';
   private activeKey = (p: RefreshPayload) =>
     `${this.keyspace}:active:${p.family}:${p.jti}`;

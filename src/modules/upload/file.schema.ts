@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Enums ──────────────────────────────────────────────────────────────────────
+// Enums
 export enum FileStatus {
   PENDING = 'PENDING',
   UPLOADED = 'UPLOADED',
@@ -22,7 +22,7 @@ export enum FileCategory {
   OTHER = 'OTHER',
 }
 
-// ─── Stored File Schema ─────────────────────────────────────────────────────────
+// Stored File Schema
 export type StoredFileDocument = HydratedDocument<StoredFile>;
 
 @Schema({ timestamps: true })

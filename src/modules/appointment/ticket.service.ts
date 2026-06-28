@@ -136,7 +136,7 @@ export class TicketService {
     return this.generateTicketPdf(appointmentId);
   }
 
-  // ─── Build the ticket PDF ────────────────────────────────────────────────────
+  // Build the ticket PDF
   private async buildPdf(data: {
     appointment: any;
     payment: PaymentDocument;
@@ -164,7 +164,7 @@ export class TicketService {
 
       const pageWidth = 495; // A4 width minus margins (595 - 100)
 
-      // ─── Header band ────────────────────────────────────────────────────────
+      // Header band
       doc.rect(50, 50, pageWidth, 70).fill('#1a56db');
       doc
         .fillColor('#ffffff')
@@ -180,7 +180,7 @@ export class TicketService {
 
       doc.moveDown(3);
 
-      // ─── Title ──────────────────────────────────────────────────────────────
+      // Title
       doc
         .fillColor('#111827')
         .fontSize(18)
@@ -189,7 +189,7 @@ export class TicketService {
 
       doc.moveDown(1);
 
-      // ─── Serial number (large, prominent) ──────────────────────────────────
+      // Serial number (large, prominent)
       doc.rect(50, doc.y, pageWidth, 50).fill('#dcfce7');
       doc
         .fillColor('#15803d')
@@ -205,7 +205,7 @@ export class TicketService {
 
       doc.moveDown(2);
 
-      // ─── Details (two-column) ───────────────────────────────────────────────
+      // Details (two-column)
       const detailsY = doc.y;
       const leftCol = 60;
       const labelColor = '#6b7280';
@@ -244,7 +244,7 @@ export class TicketService {
           .text(`  ${value}`, { align: 'left' });
       });
 
-      // ─── QR code (right side, aligned with details) ─────────────────────────
+      // QR code (right side, aligned with details)
       doc.image(qrBuffer, 380, detailsY, { width: 110 });
       doc
         .fillColor('#6b7280')
@@ -257,7 +257,7 @@ export class TicketService {
 
       doc.moveDown(8);
 
-      // ─── Footer ─────────────────────────────────────────────────────────────
+      // Footer
       doc.rect(50, doc.y, pageWidth, 45).fill('#fef3c7');
       doc
         .fillColor('#92400e')
@@ -279,7 +279,7 @@ export class TicketService {
           },
         );
 
-      // ─── Generated timestamp ─────────────────────────────────────────────────
+      // Generated timestamp
       doc
         .fillColor('#9ca3af')
         .fontSize(7)

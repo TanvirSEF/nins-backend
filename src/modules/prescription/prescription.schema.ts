@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Prescription Medicine Sub-Document ─────────────────────────────────────────
+// Prescription Medicine Sub-Document
 export class PrescriptionMedicine {
   @ApiProperty({ description: 'Medicine name', example: 'Paracetamol' })
   @Prop({ required: true, trim: true })
@@ -31,7 +31,7 @@ export class PrescriptionMedicine {
 export const PrescriptionMedicineSchema =
   SchemaFactory.createForClass(PrescriptionMedicine);
 
-// ─── Prescription Test Sub-Document ─────────────────────────────────────────────
+// Prescription Test Sub-Document
 export class PrescriptionTest {
   @ApiProperty({ description: 'Test name', example: 'Blood CBC' })
   @Prop({ required: true, trim: true })
@@ -48,7 +48,7 @@ export class PrescriptionTest {
 export const PrescriptionTestSchema =
   SchemaFactory.createForClass(PrescriptionTest);
 
-// ─── Prescription Schema ────────────────────────────────────────────────────────
+// Prescription Schema
 export type PrescriptionDocument = HydratedDocument<Prescription>;
 
 @Schema({ timestamps: true })

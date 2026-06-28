@@ -33,7 +33,7 @@ export class ReportService {
     private doctorModel: Model<DoctorProfileDocument>,
   ) {}
 
-  // ─── Revenue Report ──────────────────────────────────────────────────────────
+  // Revenue Report
   async generateRevenueReport(
     startDateStr: string,
     endDateStr: string,
@@ -143,7 +143,7 @@ export class ReportService {
     });
   }
 
-  // ─── Patient Report ──────────────────────────────────────────────────────────
+  // Patient Report
   async generatePatientReport(
     startDateStr: string | undefined,
     endDateStr: string | undefined,

@@ -60,7 +60,7 @@ export class BackupService {
     });
   }
 
-  // ─── Run a full backup: mongodump → tar.gz → R2 ───────────────────────────────
+  // Run a full backup: mongodump → tar.gz → R2
   async runBackup(): Promise<BackupResult> {
     const mongoUri = this.configService.get<string>('MONGO_URI')!;
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -134,7 +134,7 @@ export class BackupService {
     }
   }
 
-  // ─── List all backups in R2 ──────────────────────────────────────────────────
+  // List all backups in R2
   async listBackups(): Promise<BackupInfo[]> {
     const response = await this.s3.send(
       new ListObjectsV2Command({
@@ -153,12 +153,12 @@ export class BackupService {
       .sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
   }
 
-  // ─── Last backup status ──────────────────────────────────────────────────────
+  // Last backup status
   getStatus(): { lastBackup: BackupResult | null } {
     return { lastBackup: this.lastBackup };
   }
 
-  // ─── Delete backups older than retention window ──────────────────────────────
+  // Delete backups older than retention window
   private async enforceRetention(): Promise<void> {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - this.retentionDays);

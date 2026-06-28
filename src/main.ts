@@ -14,7 +14,7 @@ import { RedisIoAdapter } from './realtime/redis-io.adapter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ─── Security ───
+  // Security
   app.use(helmet());
   // Refresh-token cookie needs cookie-parser, and the browser only sends it when
   // credentials are allowed. CORS_ORIGINS (comma list) restricts the client origin
@@ -25,15 +25,15 @@ async function bootstrap() {
     : true;
   app.enableCors({ origin: corsOrigins, credentials: true });
 
-  // ─── Performance ───
+  // Performance
   app.use(compression());
 
-  // ─── Global prefix ───
+  // Global prefix
   app.setGlobalPrefix('api', {
     exclude: ['health', 'docs', 'docs-json', 'docs-yaml'],
   });
 
-  // ─── Validation ───
+  // Validation
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -42,7 +42,7 @@ async function bootstrap() {
     }),
   );
 
-  // ─── Global filters & interceptors ───
+  // Global filters & interceptors
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(
     new TimeoutInterceptor(),
@@ -50,7 +50,7 @@ async function bootstrap() {
     new TransformInterceptor(),
   );
 
-  // ─── Swagger / OpenAPI Docs ───
+  // Swagger / OpenAPI Docs
   const config = new DocumentBuilder()
     .setTitle('NINS API')
     .setDescription('The NINS Backend API documentation')
@@ -101,10 +101,10 @@ async function bootstrap() {
     customSiteTitle: 'NINS API Docs',
   });
 
-  // ─── Graceful shutdown for Docker ───
+  // Graceful shutdown for Docker
   app.enableShutdownHooks();
 
-  // ─── Multi-instance Socket.IO ───
+  // Multi-instance Socket.IO
   // Fan out realtime emits across all replicas via Redis pub/sub. Non-fatal:
   // if Redis is unavailable the app still boots (single-instance sockets).
   app.useWebSocketAdapter(new RedisIoAdapter(app));

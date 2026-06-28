@@ -46,7 +46,7 @@ export class DoctorService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Upload profile picture ──────────────────────────────────────────────────
+  // Upload profile picture
   async updateProfilePicture(
     id: string,
     file: Express.Multer.File,
@@ -68,7 +68,7 @@ export class DoctorService {
   }
 
   async onboard(dto: CreateDoctorProfileDto): Promise<DoctorProfileDocument> {
-    // ─── Duplicate Checks ──────────────────────────────────────────────────
+    // Duplicate Checks
     const existingProfile = await this.doctorModel
       .findOne({ userId: dto.userId })
       .exec();
@@ -85,7 +85,7 @@ export class DoctorService {
       throw new ConflictException('BMDC registration number already exists');
     }
 
-    // ─── User Validation ───────────────────────────────────────────────────
+    // User Validation
     const user = await this.userModel.findById(dto.userId).exec();
     if (!user) {
       throw new NotFoundException('User not found');
@@ -94,13 +94,13 @@ export class DoctorService {
       throw new BadRequestException('User does not have DOCTOR role');
     }
 
-    // ─── Department Validation ─────────────────────────────────────────────
+    // Department Validation
     const department = await this.deptModel.findById(dto.departmentId).exec();
     if (!department) {
       throw new NotFoundException('Department not found');
     }
 
-    // ─── Unit Validation (if provided) ─────────────────────────────────────
+    // Unit Validation (if provided)
     if (dto.unitId) {
       const unitObjectId = new Types.ObjectId(dto.unitId);
       const unitExists = department.units?.some((u) =>
@@ -113,7 +113,7 @@ export class DoctorService {
       }
     }
 
-    // ─── Create Profile ────────────────────────────────────────────────────
+    // Create Profile
     const doctor = new this.doctorModel({
       ...dto,
       userId: new Types.ObjectId(dto.userId),

@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Enums ──────────────────────────────────────────────────────────────────────
+// Enums
 export enum PaymentStatus {
   PENDING = 'PENDING',
   VALIDATED = 'VALIDATED',
@@ -10,12 +10,12 @@ export enum PaymentStatus {
   CANCELLED = 'CANCELLED',
 }
 
-// ─── Payment Schema ─────────────────────────────────────────────────────────────
+// Payment Schema
 export type PaymentDocument = HydratedDocument<Payment>;
 
 @Schema({ timestamps: true })
 export class Payment {
-  // ─── Core References ────────────────────────────────────────────────────────
+  // Core References
   @ApiProperty({
     description: 'Reference to Appointment',
     example: '507f1f77bcf86cd799439011',
@@ -35,7 +35,7 @@ export class Payment {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
   patientId: Types.ObjectId;
 
-  // ─── Transaction Identifiers ────────────────────────────────────────────────
+  // Transaction Identifiers
   @ApiProperty({
     description: 'Unique transaction ID (UUID v4)',
     example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
@@ -50,7 +50,7 @@ export class Payment {
   @Prop()
   valId?: string;
 
-  // ─── Amount ─────────────────────────────────────────────────────────────────
+  // Amount
   @ApiProperty({
     description: 'Fee amount at initiation (BDT)',
     example: 50,
@@ -66,7 +66,7 @@ export class Payment {
   @Prop({ required: true, default: 'BDT' })
   currency: string;
 
-  // ─── Status ─────────────────────────────────────────────────────────────────
+  // Status
   @ApiProperty({
     description: 'Payment status',
     enum: PaymentStatus,
@@ -80,14 +80,14 @@ export class Payment {
   })
   status: PaymentStatus;
 
-  // ─── SSLCommerz Session ─────────────────────────────────────────────────────
+  // SSLCommerz Session
   @ApiPropertyOptional({
     description: 'SSLCommerz session key',
   })
   @Prop()
   sessionKey?: string;
 
-  // ─── SSLCommerz Response Fields (populated by IPN) ──────────────────────────
+  // SSLCommerz Response Fields (populated by IPN)
   @ApiPropertyOptional({
     description: 'Bank transaction ID',
     example: '1709162345070ANJdZV8LyI4cMw',
@@ -149,7 +149,7 @@ export class Payment {
   @Prop()
   errorReason?: string;
 
-  // ─── Timestamps ─────────────────────────────────────────────────────────────
+  // Timestamps
   @ApiPropertyOptional({
     description: 'Date when payment was confirmed',
   })

@@ -86,30 +86,30 @@ export class AppointmentService {
     const patientObjectId = new Types.ObjectId(patientId);
     const appointmentDate = new Date(dto.appointmentDate);
 
-    // ─── 1. Validate Doctor Exists ──────────────────────────────────────────
+    // 1. Validate Doctor Exists
     const doctor = await this.doctorModel.findById(dto.doctorId).exec();
     if (!doctor) {
       throw new NotFoundException('Doctor profile not found');
     }
 
-    // ─── 2. Validate Schedule Exists ────────────────────────────────────────
+    // 2. Validate Schedule Exists
     const schedule = await this.scheduleModel.findById(dto.scheduleId).exec();
     if (!schedule) {
       throw new NotFoundException('Schedule not found');
     }
 
-    // ─── 3. Schedule Belongs to This Doctor ─────────────────────────────────
+    // 3. Schedule Belongs to This Doctor
     if (!schedule.doctorId.equals(doctorObjectId)) {
       throw new BadRequestException('Schedule does not belong to this doctor');
     }
 
-    // ─── 4. Day-of-Week Match ───────────────────────────────────────────────
+    // 4. Day-of-Week Match
     const requestedDay = appointmentDate.getDay();
     if (requestedDay !== schedule.dayOfWeek) {
       throw new BadRequestException('Doctor is not available on this day');
     }
 
-    // ─── 4b. Doctor Leave Check ────────────────────────────────────────────
+    // 4b. Doctor Leave Check
     const onLeave = await this.leaveModel
       .findOne({
         doctorId: doctorObjectId,
@@ -124,7 +124,7 @@ export class AppointmentService {
       );
     }
 
-    // ─── 5. Double Ticket Block ────────────────────────────────────────────
+    // 5. Double Ticket Block
     const alreadyBooked = await this.appointmentModel
       .findOne({
         patientId: patientObjectId,
@@ -143,7 +143,7 @@ export class AppointmentService {
       );
     }
 
-    // ─── 6. Capacity Check (exclude cancelled) ──────────────────────────────
+    // 6. Capacity Check (exclude cancelled)
     const existingCount = await this.appointmentModel
       .countDocuments({
         doctorId: doctorObjectId,
@@ -159,8 +159,8 @@ export class AppointmentService {
       throw new BadRequestException('All booking slots for this date are full');
     }
 
-    // ─── 7. Auto Serial Number ──────────────────────────────────────────────
-    // ─── 7+8. Create Appointment (race-safe) ─────────────────────────────────
+    // 7. Auto Serial Number
+    // 7+8. Create Appointment (race-safe)
     // The count-based pre-check above is a fast path; the unique indexes on the
     // schema are the authoritative backstop for concurrent bookings. On a serial
     // collision (E11000) we recompute the count and retry; on a duplicate active
@@ -211,10 +211,10 @@ export class AppointmentService {
       throw new BadRequestException('All booking slots for this date are full');
     }
 
-    // ─── 9. Cache Invalidation ──────────────────────────────────────────────
+    // 9. Cache Invalidation
     await this.invalidateAppointmentCache(patientId, dto.doctorId);
 
-    // ─── 10. Notification: Appointment Booked ────────────────────────────────
+    // 10. Notification: Appointment Booked
     await this.notificationService
       .notify(patientId, NotificationType.APPOINTMENT_BOOKED, {
         doctorName: '',
@@ -228,7 +228,7 @@ export class AppointmentService {
     return saved;
   }
 
-  // ─── Combined: Book appointment + initiate payment in one step ───────────────
+  // Combined: Book appointment + initiate payment in one step
   async bookWithPayment(
     dto: CreateAppointmentDto,
     userId: string,
@@ -322,7 +322,7 @@ export class AppointmentService {
     }
   }
 
-  // ─── Get appointment ticket PDF (delegates to TicketService) ─────────────────
+  // Get appointment ticket PDF (delegates to TicketService)
   async getTicket(
     appointmentId: string,
     userId: string,
@@ -441,7 +441,7 @@ export class AppointmentService {
       throw new NotFoundException(`Appointment #${id} not found`);
     }
 
-    // ─── Role-based status transitions ──────────────────────────────────────
+    // Role-based status transitions
     const prevStatus = appointment.status;
     if (user.role === Role.PATIENT) {
       // Patients can only CANCEL their own appointments
@@ -464,7 +464,7 @@ export class AppointmentService {
       String(appointment.doctorId),
     );
 
-    // ─── Notification: Status Changed / Cancelled ─────────────────────────────
+    // Notification: Status Changed / Cancelled
     if (prevStatus !== dto.status) {
       const doctor = await this.doctorModel
         .findById(appointment.doctorId)
@@ -504,7 +504,7 @@ export class AppointmentService {
     return appointment;
   }
 
-  // ─── Helpers ────────────────────────────────────────────────────────────────
+  // Helpers
 
   private startOfDay(date: Date): Date {
     const d = new Date(date);

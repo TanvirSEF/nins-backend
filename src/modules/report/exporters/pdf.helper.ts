@@ -25,7 +25,7 @@ export async function generatePdfReport(options: {
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
-    // ─── Header ──────────────────────────────────────────────────────────────
+    // Header
     doc
       .fillColor('#1a56db')
       .fontSize(20)
@@ -42,7 +42,7 @@ export async function generatePdfReport(options: {
 
     doc.moveDown(1);
 
-    // ─── Summary box ──────────────────────────────────────────────────────────
+    // Summary box
     if (options.summary && options.summary.length) {
       options.summary.forEach((item) => {
         doc
@@ -56,7 +56,7 @@ export async function generatePdfReport(options: {
       doc.moveDown(1);
     }
 
-    // ─── Table header ─────────────────────────────────────────────────────────
+    // Table header
     const startX = 50;
     let y = doc.y;
     const rowHeight = 20;
@@ -73,7 +73,7 @@ export async function generatePdfReport(options: {
     });
     y += rowHeight;
 
-    // ─── Table rows ───────────────────────────────────────────────────────────
+    // Table rows
     doc.font('Helvetica').fontSize(8);
     options.rows.forEach((row, idx) => {
       // Stop if we'd overflow the page
@@ -98,7 +98,7 @@ export async function generatePdfReport(options: {
       y += rowHeight;
     });
 
-    // ─── Footer ───────────────────────────────────────────────────────────────
+    // Footer
     doc
       .moveTo(50, y + 10)
       .fillColor('#9ca3af')

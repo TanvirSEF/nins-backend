@@ -33,7 +33,7 @@ export class GalleryService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Create gallery item (upload image to R2) ────────────────────────────────
+  // Create gallery item (upload image to R2)
   async create(
     file: Express.Multer.File,
     dto: CreateGalleryDto,
@@ -54,7 +54,7 @@ export class GalleryService {
     return saved;
   }
 
-  // ─── List gallery (public, paginated) ────────────────────────────────────────
+  // List gallery (public, paginated)
   async findAll(
     filters: GalleryFilterDto,
   ): Promise<PaginatedResult<GalleryItemDocument>> {
@@ -95,7 +95,7 @@ export class GalleryService {
     return result;
   }
 
-  // ─── Single item ─────────────────────────────────────────────────────────────
+  // Single item
   async findOne(id: string): Promise<GalleryItemDocument> {
     const item = await this.galleryModel.findById(id).exec();
     if (!item) {
@@ -104,7 +104,7 @@ export class GalleryService {
     return item;
   }
 
-  // ─── Update metadata ─────────────────────────────────────────────────────────
+  // Update metadata
   async update(
     id: string,
     dto: UpdateGalleryDto,
@@ -119,7 +119,7 @@ export class GalleryService {
     return item;
   }
 
-  // ─── Delete (R2 + DB) ────────────────────────────────────────────────────────
+  // Delete (R2 + DB)
   async remove(id: string): Promise<GalleryItemDocument> {
     const item = await this.galleryModel.findById(id).exec();
     if (!item) {
@@ -133,7 +133,7 @@ export class GalleryService {
     return item;
   }
 
-  // ─── Cache invalidation ──────────────────────────────────────────────────────
+  // Cache invalidation
   private async invalidateGalleryCache(): Promise<void> {
     const keysToDelete: Promise<any>[] = [];
     for (let p = 1; p <= 50; p++) {

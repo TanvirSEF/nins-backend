@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Bed Type Stats ─────────────────────────────────────────────────────────────
+// Bed Type Stats
 export class BedTypeStats {
   @ApiProperty({ description: 'Total beds', example: 16 })
   total: number;
@@ -12,7 +12,7 @@ export class BedTypeStats {
   available: number;
 }
 
-// ─── Overview Stats ──────────────────────────────────────────────────────────────
+// Overview Stats
 export class OverviewStats {
   @ApiProperty({ description: 'Total registered patients', example: 1250 })
   totalPatients: number;
@@ -36,7 +36,7 @@ export class OverviewStats {
   todayCancelled: number;
 }
 
-// ─── Appointment Trend Day ──────────────────────────────────────────────────────
+// Appointment Trend Day
 export class AppointmentTrendDay {
   @ApiProperty({ description: 'Date (YYYY-MM-DD)', example: '2026-06-13' })
   date: string;
@@ -54,7 +54,7 @@ export class AppointmentTrendDay {
   pending: number;
 }
 
-// ─── Top Department ──────────────────────────────────────────────────────────────
+// Top Department
 export class TopDepartment {
   @ApiProperty({
     description: 'Department ID',
@@ -69,7 +69,7 @@ export class TopDepartment {
   appointmentCount: number;
 }
 
-// ─── Recent Appointment ─────────────────────────────────────────────────────────
+// Recent Appointment
 export class RecentAppointment {
   @ApiProperty({ description: 'Appointment ID' })
   id: string;
@@ -90,7 +90,7 @@ export class RecentAppointment {
   serialNumber: number;
 }
 
-// ─── Full Dashboard Stats Response ──────────────────────────────────────────────
+// Full Dashboard Stats Response
 export class DashboardStatsResponse {
   @ApiProperty({ description: 'Overview statistics', type: OverviewStats })
   overview: OverviewStats;

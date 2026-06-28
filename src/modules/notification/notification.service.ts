@@ -53,7 +53,7 @@ export class NotificationService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Core: Create + dispatch a notification ────────────────────────────────
+  // Core: Create + dispatch a notification
   async notify(
     userId: string,
     type: NotificationType,
@@ -112,7 +112,7 @@ export class NotificationService {
     }
   }
 
-  // ─── Build title + message from type ───────────────────────────────────────
+  // Build title + message from type
   private buildContent(
     type: NotificationType,
     data: Record<string, any>,
@@ -193,7 +193,7 @@ export class NotificationService {
     }
   }
 
-  // ─── Dispatch the right email template ─────────────────────────────────────
+  // Dispatch the right email template
   private async dispatchEmail(
     type: NotificationType,
     to: string,
@@ -229,7 +229,7 @@ export class NotificationService {
     }
   }
 
-  // ─── List my notifications (paginated + cached) ─────────────────────────────
+  // List my notifications (paginated + cached)
   async findMyNotifications(
     userId: string,
     filters: NotificationFilterDto,
@@ -275,7 +275,7 @@ export class NotificationService {
     return result;
   }
 
-  // ─── Unread count ───────────────────────────────────────────────────────────
+  // Unread count
   async findUnreadCount(userId: string): Promise<{ count: number }> {
     const cacheKey = `notifications:unread:${userId}`;
     const cached = await this.cacheManager.get<number>(cacheKey);
@@ -294,7 +294,7 @@ export class NotificationService {
     return { count };
   }
 
-  // ─── Mark single as read ────────────────────────────────────────────────────
+  // Mark single as read
   async markAsRead(id: string, userId: string): Promise<NotificationDocument> {
     const notification = await this.notificationModel.findById(id).exec();
     if (!notification) {
@@ -312,7 +312,7 @@ export class NotificationService {
     return updated;
   }
 
-  // ─── Mark all as read ───────────────────────────────────────────────────────
+  // Mark all as read
   async markAllAsRead(userId: string): Promise<{ modified: number }> {
     const result = await this.notificationModel
       .updateMany(
@@ -324,7 +324,7 @@ export class NotificationService {
     return { modified: result.modifiedCount };
   }
 
-  // ─── Delete ─────────────────────────────────────────────────────────────────
+  // Delete
   async remove(id: string, userId: string): Promise<NotificationDocument> {
     const notification = await this.notificationModel.findById(id).exec();
     if (!notification) {
@@ -340,7 +340,7 @@ export class NotificationService {
     return notification;
   }
 
-  // ─── Cache helpers ──────────────────────────────────────────────────────────
+  // Cache helpers
   private async invalidateUnreadCache(userId: string): Promise<void> {
     const keysToDelete: Promise<any>[] = [
       this.cacheManager.del(`notifications:unread:${userId}`),

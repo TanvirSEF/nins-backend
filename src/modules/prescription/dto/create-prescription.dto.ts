@@ -10,7 +10,7 @@ import {
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Medicine DTO ───────────────────────────────────────────────────────────────
+// Medicine DTO
 export class MedicineDto {
   @ApiProperty({ description: 'Medicine name', example: 'Paracetamol' })
   @IsString()
@@ -41,7 +41,7 @@ export class MedicineDto {
   instructions?: string;
 }
 
-// ─── Test DTO ───────────────────────────────────────────────────────────────────
+// Test DTO
 export class TestDto {
   @ApiProperty({ description: 'Test name', example: 'Blood CBC' })
   @IsString()
@@ -57,7 +57,7 @@ export class TestDto {
   instructions?: string;
 }
 
-// ─── Create Prescription DTO ────────────────────────────────────────────────────
+// Create Prescription DTO
 export class CreatePrescriptionDto {
   @ApiProperty({
     description: 'Medical record ID',

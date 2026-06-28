@@ -160,7 +160,7 @@ export class ScheduleService {
     return schedule;
   }
 
-  // ─── Notify affected patients about a schedule change ───────────────────────
+  // Notify affected patients about a schedule change
   private async notifyScheduleChange(
     doctorId: Types.ObjectId,
     reason: string,

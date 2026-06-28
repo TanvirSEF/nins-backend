@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Enums ──────────────────────────────────────────────────────────────────────
+// Enums
 export enum PathologyStatus {
   ORDERED = 'ORDERED',
   SAMPLE_COLLECTED = 'SAMPLE_COLLECTED',
@@ -25,7 +25,7 @@ export enum ResultFlag {
   LOW = 'LOW',
 }
 
-// ─── Result Value Sub-Document ──────────────────────────────────────────────────
+// Result Value Sub-Document
 export class ResultValue {
   @ApiProperty({ description: 'Parameter name', example: 'Hemoglobin' })
   @Prop({ required: true, trim: true })
@@ -53,7 +53,7 @@ export class ResultValue {
 
 export const ResultValueSchema = SchemaFactory.createForClass(ResultValue);
 
-// ─── Pathology Report Schema ────────────────────────────────────────────────────
+// Pathology Report Schema
 export type PathologyReportDocument = HydratedDocument<PathologyReport>;
 
 @Schema({ timestamps: true })

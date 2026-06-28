@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Vitals Sub-Document ───────────────────────────────────────────────────────
+// Vitals Sub-Document
 export class Vitals {
   @ApiPropertyOptional({ description: 'Blood pressure', example: '120/80' })
   @Prop({ trim: true })
@@ -38,13 +38,13 @@ export class Vitals {
 
 export const VitalsSchema = SchemaFactory.createForClass(Vitals);
 
-// ─── Enums ──────────────────────────────────────────────────────────────────────
+// Enums
 export enum MedicalRecordStatus {
   ACTIVE = 'ACTIVE',
   ARCHIVED = 'ARCHIVED',
 }
 
-// ─── Medical Record Schema ──────────────────────────────────────────────────────
+// Medical Record Schema
 export type MedicalRecordDocument = HydratedDocument<MedicalRecord>;
 
 @Schema({ timestamps: true })

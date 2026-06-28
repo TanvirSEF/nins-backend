@@ -59,7 +59,7 @@ export class PaymentService {
     this.backendUrl = this.configService.get<string>('BACKEND_URL')!;
   }
 
-  // ─── Initiate Payment ────────────────────────────────────────────────────────
+  // Initiate Payment
   async initPayment(
     appointmentId: string,
     userId: string,
@@ -210,7 +210,7 @@ export class PaymentService {
     }
   }
 
-  // ─── Handle IPN (SSLCommerz server-to-server) ───────────────────────────────
+  // Handle IPN (SSLCommerz server-to-server)
   async handleIPN(ipnData: Record<string, any>): Promise<void> {
     const {
       tran_id,
@@ -336,7 +336,7 @@ export class PaymentService {
     }
   }
 
-  // ─── Callback Handlers (read-only, informational) ────────────────────────────
+  // Callback Handlers (read-only, informational)
   async handleSuccess(
     queryParams: Record<string, any>,
   ): Promise<{ success: boolean; tranId?: string; message: string }> {
@@ -428,7 +428,7 @@ export class PaymentService {
     };
   }
 
-  // ─── Patient Payment History ─────────────────────────────────────────────────
+  // Patient Payment History
   async findMyPayments(
     userId: string,
     filters: PaymentFilterDto,
@@ -472,7 +472,7 @@ export class PaymentService {
     return result;
   }
 
-  // ─── Admin: All Payments ─────────────────────────────────────────────────────
+  // Admin: All Payments
   async findAll(
     filters: PaymentFilterDto,
   ): Promise<PaginatedResult<PaymentDocument>> {
@@ -517,7 +517,7 @@ export class PaymentService {
     return result;
   }
 
-  // ─── Single Payment Detail ───────────────────────────────────────────────────
+  // Single Payment Detail
   async findOne(id: string): Promise<PaymentDocument> {
     const payment = await this.paymentModel
       .findById(id)
@@ -531,7 +531,7 @@ export class PaymentService {
     return payment;
   }
 
-  // ─── Live Transaction Query (admin) ─────────────────────────────────────────
+  // Live Transaction Query (admin)
   async queryTransactionStatus(tranId: string): Promise<Record<string, any>> {
     const payment = await this.paymentModel.findOne({ tranId }).exec();
     if (!payment) {

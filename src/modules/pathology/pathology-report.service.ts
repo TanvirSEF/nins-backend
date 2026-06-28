@@ -52,7 +52,7 @@ export class PathologyReportService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  // ─── Create test order ───────────────────────────────────────────────────────
+  // Create test order
   async create(
     dto: CreatePathologyDto,
     userId: string,
@@ -96,7 +96,7 @@ export class PathologyReportService {
     return saved;
   }
 
-  // ─── Add result (staff uploads findings + optional file) ─────────────────────
+  // Add result (staff uploads findings + optional file)
   async addResult(
     id: string,
     dto: AddResultDto,
@@ -148,7 +148,7 @@ export class PathologyReportService {
     return updated;
   }
 
-  // ─── Update order ────────────────────────────────────────────────────────────
+  // Update order
   async update(
     id: string,
     dto: UpdatePathologyDto,
@@ -166,7 +166,7 @@ export class PathologyReportService {
     return report;
   }
 
-  // ─── Single report ───────────────────────────────────────────────────────────
+  // Single report
   async findOne(id: string): Promise<PathologyReportDocument> {
     const report = await this.reportModel
       .findById(id)
@@ -179,7 +179,7 @@ export class PathologyReportService {
     return report;
   }
 
-  // ─── Patient's own reports ───────────────────────────────────────────────────
+  // Patient's own reports
   async findMyReports(
     userId: string,
     filters: PathologyFilterDto,
@@ -191,7 +191,7 @@ export class PathologyReportService {
     );
   }
 
-  // ─── Patient's reports (staff/doctor view) ───────────────────────────────────
+  // Patient's reports (staff/doctor view)
   async findPatientReports(
     patientId: string,
     filters: PathologyFilterDto,
@@ -203,7 +203,7 @@ export class PathologyReportService {
     );
   }
 
-  // ─── All reports (admin) ─────────────────────────────────────────────────────
+  // All reports (admin)
   async findAll(
     filters: PathologyFilterDto,
   ): Promise<PaginatedResult<PathologyReportDocument>> {
@@ -214,7 +214,7 @@ export class PathologyReportService {
     );
   }
 
-  // ─── Delete ──────────────────────────────────────────────────────────────────
+  // Delete
   async remove(id: string): Promise<PathologyReportDocument> {
     const report = await this.reportModel.findByIdAndDelete(id).exec();
     if (!report) {
@@ -227,7 +227,7 @@ export class PathologyReportService {
     return report;
   }
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────────
+  // Helpers
   private buildQuery(filters: PathologyFilterDto): any {
     const query: any = {};
     if (filters.patientId)

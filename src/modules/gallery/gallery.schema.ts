@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-// ─── Gallery Category Enum ──────────────────────────────────────────────────────
+// Gallery Category Enum
 export enum GalleryCategory {
   FACILITY = 'FACILITY',
   EVENT = 'EVENT',
@@ -11,7 +11,7 @@ export enum GalleryCategory {
   OTHER = 'OTHER',
 }
 
-// ─── Gallery Item Schema ────────────────────────────────────────────────────────
+// Gallery Item Schema
 export type GalleryItemDocument = HydratedDocument<GalleryItem>;
 
 @Schema({ timestamps: true })
